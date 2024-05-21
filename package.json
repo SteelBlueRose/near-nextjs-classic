@@ -16,6 +16,7 @@
     "@near-wallet-selector/here-wallet": "^8.9.7",
     "@near-wallet-selector/modal-ui": "^8.9.7",
     "@near-wallet-selector/my-near-wallet": "^8.9.7",
+    "@vercel/speed-insights": "^1.0.10",
     "@web3-onboard/core": "^2.21.5",
     "@web3-onboard/injected-wallets": "^2.10.15",
     "@web3-onboard/ledger": "^2.6.0",
@@ -30,9 +31,9 @@
     "next": "14.2.0",
     "pino-pretty": "^11.0.0",
     "react": "^18",
-    "react-dom": "^18",
     "react-bootstrap": "^2.10.2",
-    "react-bootstrap-icons": "^1.11.4"
+    "react-bootstrap-icons": "^1.11.4",
+    "react-dom": "^18"
   },
   "overrides": {
     "near-api-js": "^3.0.4"

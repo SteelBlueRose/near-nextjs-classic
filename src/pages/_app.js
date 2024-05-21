@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import '@/styles/globals.css';
 import { NearContext } from '@/context';
 import { Navigation } from '@/components/navigation';
-
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Wallet } from '@/wallets/near';
 import { NetworkId, HelloNearContract } from '@/config';
 
@@ -25,6 +25,7 @@ export default function MyApp({ Component, pageProps }) {
     <NearContext.Provider value={{ wallet, signedAccountId }}>
       <Navigation />
       <Component {...pageProps} />
+      <SpeedInsights />
     </NearContext.Provider>
   );
 }
