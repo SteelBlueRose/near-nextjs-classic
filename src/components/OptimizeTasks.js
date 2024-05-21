@@ -1,6 +1,8 @@
+// components/OptimizeTasks.js
+
 import React from 'react';
 
-const OptimizeTasks = ({ tasks, setOptimizedTasks }) => {
+const OptimizeTasks = ({ tasks, setTasks }) => {
   const optimizeTasks = async () => {
     const response = await fetch('/api/optimize', {
       method: 'POST',
@@ -11,11 +13,11 @@ const OptimizeTasks = ({ tasks, setOptimizedTasks }) => {
     });
 
     const result = await response.json();
-    setOptimizedTasks(result.result);
+    setTasks(result.result);  // Оновлення стану задач у TodoApp з отриманими задачами
   };
 
   return (
-    <button onClick={optimizeTasks} className="btn btn-primary">Optimize Tasks</button>
+    <button className="btn btn-secondary" onClick={optimizeTasks}>Optimize Tasks</button>
   );
 };
 

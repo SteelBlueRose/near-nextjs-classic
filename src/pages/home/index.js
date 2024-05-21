@@ -10,6 +10,7 @@ import EditTaskForm from '@/components/EditTaskForm';
 import RewardForm from '@/components/RewardForm';
 import SortDialog from '@/components/SortDialog';
 import RewardPoints from '@/components/RewardPoints';
+import OptimizeTasks from '@/components/OptimizeTasks';
 
 const CONTRACT = TodoListContract;
 
@@ -29,7 +30,8 @@ export default function TodoApp() {
   const [sortType, setSortType] = useState('time');
   const [sortOrder, setSortOrder] = useState('asc');
   const [rewardPoints, setRewardPoints] = useState(0);
-
+  const [optimizedTasks, setOptimizedTasks] = useState(null); 
+  
   useEffect(() => {
     if (!signedAccountId) {
       router.push('/');

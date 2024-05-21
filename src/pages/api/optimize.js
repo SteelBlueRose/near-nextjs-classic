@@ -4,7 +4,7 @@ import path from 'path';
 export default function handler(req, res) {
   const { tasks } = req.body;
 
-  const pythonProcess = spawn('python3', [path.resolve('./python/optimizer.py'), JSON.stringify(tasks)]);
+  const pythonProcess = spawn('python', [path.resolve('./python/optimizer.py'), JSON.stringify(tasks)]);
 
   pythonProcess.stdout.on('data', (data) => {
     res.status(200).json({ result: JSON.parse(data.toString()) });

@@ -61,7 +61,7 @@
 /* To-do list styles */
 .center {
   width: 100%;
-  max-width: 800px;
+  max-width: 850px;
   padding: 2rem;
   background-color: #fff;
   border-radius: 8px;
@@ -334,8 +334,10 @@
 
 .buttonContainer {
   display: flex;
-  align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .inputTip {
@@ -371,13 +373,13 @@
   border-radius: 20px;
   padding: 5px 10px;
   font-size: 16px;
+  margin-right: 10px;
   font-weight: bold;
   color: #333;
 }
 
 .rewardPoints {
   color: #bb9457;
-  margin-left: 5px;
   font-weight: bold;
 }
 
