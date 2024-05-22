@@ -19,8 +19,11 @@ const CurrentDateTime = () => {
     };
   
     const formatTime = (date) => {
-      return date.toLocaleTimeString('en-GB');
-    };
+        return date.toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      };
   
     return (
       <div className={styles.dateTimeContainer}>

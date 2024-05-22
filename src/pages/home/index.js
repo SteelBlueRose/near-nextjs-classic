@@ -11,7 +11,6 @@ import RewardForm from '@/components/RewardForm';
 import SortDialog from '@/components/SortDialog';
 import RewardPoints from '@/components/RewardPoints';
 
-import tasklist_styles from '@/styles/TaskList.module.css';
 import main_styles from '@/styles/Main.module.css';
 import button_styles from '@/styles/Button.module.css';
 const CONTRACT = TodoListContract;

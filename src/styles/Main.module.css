@@ -10,6 +10,8 @@
 .container {
   display: flex;
   gap: 2rem;
+  width: 100%; 
+  max-width: 1400px;
 }
 
 .block {
@@ -17,7 +19,7 @@
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 100%;
+  width: 55%;
 }
 
 .center {
@@ -26,10 +28,11 @@
 
 .dashboard {
   display: flex;
-  align-items: center;
+  align-items: start;
   justify-content: center;
   background-color: #ffffff;
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  flex: 1;
 }
