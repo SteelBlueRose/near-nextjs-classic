@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from '@/styles/app.module.css';
+import styles from '@/styles/Dialog.module.css';
 
 const RewardForm = ({ isAddRewardDialogOpen, setIsAddRewardDialogOpen, addReward }) => {
   const [newReward, setNewReward] = useState({

@@ -1,8 +1,8 @@
 import { useState, useEffect, useContext } from 'react';
 import { NearContext } from '@/context';
 import { useRouter } from 'next/router';
-import styles from '@/styles/app.module.css';
 import { TodoListContract } from '../../config';
+
 import TaskList from '@/components/TaskList';
 import RewardList from '@/components/RewardList';
 import AddTaskForm from '@/components/AddTaskForm';
@@ -11,6 +11,9 @@ import RewardForm from '@/components/RewardForm';
 import SortDialog from '@/components/SortDialog';
 import RewardPoints from '@/components/RewardPoints';
 
+import tasklist_styles from '@/styles/TaskList.module.css';
+import main_styles from '@/styles/Main.module.css';
+import button_styles from '@/styles/Button.module.css';
 const CONTRACT = TodoListContract;
 
 export default function TodoApp() {
@@ -205,10 +208,10 @@ export default function TodoApp() {
 
   const getPriorityClassName = (priority) => {
     switch (priority) {
-      case 1: return `${styles.priorityFlag} ${styles.blue}`;
-      case 2: return `${styles.priorityFlag} ${styles.yellow}`;
-      case 3: return `${styles.priorityFlag} ${styles.red}`;
-      default: return `${styles.priorityFlag} ${styles.grey}`;
+      case 1: return `${button_styles.priorityFlag} ${button_styles.blue}`;
+      case 2: return `${button_styles.priorityFlag} ${button_styles.yellow}`;
+      case 3: return `${button_styles.priorityFlag} ${button_styles.red}`;
+      default: return `${button_styles.priorityFlag} ${button_styles.grey}`;
     }
   };
 
@@ -249,9 +252,9 @@ export default function TodoApp() {
   };
 
   return (
-    <main className={styles.main}>
-      <div className={styles.center}>
-        <div className={styles.buttonContainer}>
+    <main className={main_styles.main}>
+      <div className={main_styles.center}>
+        <div className={button_styles.buttonContainer}>
           <button className="btn btn-primary" onClick={() => setIsAddDialogOpen(true)}>Add a To Do</button>
           <button className="btn btn-primary" onClick={() => setIsAddRewardDialogOpen(true)}>Add a Reward</button>
           <button className="btn btn-secondary" onClick={() => setShowCompleted(!showCompleted)}>
@@ -261,7 +264,7 @@ export default function TodoApp() {
             {showRewards ? 'Hide Rewards' : 'Show Rewards'}
           </button>
           <button className="btn btn-secondary" onClick={() => setIsSortDialogOpen(true)}>Sort</button>
-          <div className={styles.flexGrow}>
+          <div className={main_styles.flexGrow}>
             <RewardPoints points={rewardPoints} />
           </div>
         </div>

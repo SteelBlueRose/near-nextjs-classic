@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from '@/styles/app.module.css';
+import styles from '@/styles/Dialog.module.css';
 
 const AddTaskForm = ({ isOpen, onClose, addTask }) => {
   const [taskData, setTaskData] = useState({
