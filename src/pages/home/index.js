@@ -253,40 +253,45 @@ export default function TodoApp() {
 
   return (
     <main className={main_styles.main}>
-      <div className={main_styles.center}>
-        <div className={button_styles.buttonContainer}>
-          <button className="btn btn-primary" onClick={() => setIsAddDialogOpen(true)}>Add a To Do</button>
-          <button className="btn btn-primary" onClick={() => setIsAddRewardDialogOpen(true)}>Add a Reward</button>
-          <button className="btn btn-secondary" onClick={() => setShowCompleted(!showCompleted)}>
-            {showCompleted ? 'Hide Completed' : 'Show Completed'}
-          </button>
-          <button className="btn btn-secondary" onClick={() => setShowRewards(!showRewards)}>
-            {showRewards ? 'Show Tasks' : 'Show Rewards'}
-          </button>
-          <button className="btn btn-secondary" onClick={() => setIsSortDialogOpen(true)}>Sort</button>
-          <div className={main_styles.flexGrow}>
-            <RewardPoints points={rewardPoints} />
+      <div className={main_styles.container}>
+        <div className={main_styles.block}>
+          <div className={button_styles.buttonContainer}>
+            <button className="btn btn-primary" onClick={() => setIsAddDialogOpen(true)}>Add a To Do</button>
+            <button className="btn btn-primary" onClick={() => setIsAddRewardDialogOpen(true)}>Add a Reward</button>
+            <button className="btn btn-secondary" onClick={() => setShowCompleted(!showCompleted)}>
+              {showCompleted ? 'Hide Completed' : 'Show Completed'}
+            </button>
+            <button className="btn btn-secondary" onClick={() => setShowRewards(!showRewards)}>
+              {showRewards ? 'Show Tasks' : 'Show Rewards'}
+            </button>
+            <button className="btn btn-secondary" onClick={() => setIsSortDialogOpen(true)}>Sort</button>
+            <div className={main_styles.flexGrow}>
+              <RewardPoints points={rewardPoints} />
+            </div>
           </div>
+          {!showRewards ? (
+            <TaskList
+              tasks={sortedTasks}
+              markComplete={markComplete}
+              handleEditClick={handleEditClick}
+              removeTask={removeTask}
+              showCompleted={showCompleted}
+              truncateText={truncateText}
+              getPriorityColor={getPriorityColor}
+              getPriorityClassName={getPriorityClassName}
+              formatEstimatedTime={formatEstimatedTime}
+            />
+          ) : (
+            <RewardList
+              rewards={rewards}
+              redeemReward={redeemReward}
+              removeReward={removeReward}
+            />
+          )}
         </div>
-        {!showRewards ? (
-          <TaskList
-            tasks={sortedTasks}
-            markComplete={markComplete}
-            handleEditClick={handleEditClick}
-            removeTask={removeTask}
-            showCompleted={showCompleted}
-            truncateText={truncateText}
-            getPriorityColor={getPriorityColor}
-            getPriorityClassName={getPriorityClassName}
-            formatEstimatedTime={formatEstimatedTime}
-          />
-        ) : (
-          <RewardList
-            rewards={rewards}
-            redeemReward={redeemReward}
-            removeReward={removeReward}
-          />
-        )}
+        <div className={main_styles.dashboard}>
+          <button className="btn btn-primary">Dashboard</button>
+        </div>
       </div>
       <AddTaskForm
         isOpen={isAddDialogOpen}
