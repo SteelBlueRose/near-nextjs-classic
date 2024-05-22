@@ -1,0 +1,16 @@
+.dateTimeContainer {
+    text-align: center;
+    font-size: 1rem;
+    color: #333;
+    margin-top: 1rem;
+  }
+  
+  .date {
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+  }
+  
+  .time {
+    font-weight: bold;
+  }
+  
