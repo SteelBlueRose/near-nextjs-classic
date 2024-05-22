@@ -1,7 +1,7 @@
 .taskList {
   width: 100%;
   margin-top: 1rem;
-  max-height: 55vh;
+  max-height: 80vh;
   overflow-y: auto;
 }
 

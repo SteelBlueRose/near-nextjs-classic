@@ -1,7 +1,7 @@
 .rewardList {
   width: 100%;
   margin-top: 1rem;
-  max-height: 25vh;
+  max-height: 80vh;
   overflow-y: auto;
 }
 

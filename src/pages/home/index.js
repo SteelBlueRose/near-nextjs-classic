@@ -10,9 +10,10 @@ import EditTaskForm from '@/components/EditTaskForm';
 import RewardForm from '@/components/RewardForm';
 import SortDialog from '@/components/SortDialog';
 import RewardPoints from '@/components/RewardPoints';
+
+import tasklist_styles from '@/styles/TaskList.module.css';
 import main_styles from '@/styles/Main.module.css';
 import button_styles from '@/styles/Button.module.css';
-
 const CONTRACT = TodoListContract;
 
 export default function TodoApp() {
@@ -31,7 +32,7 @@ export default function TodoApp() {
   const [sortType, setSortType] = useState('time');
   const [sortOrder, setSortOrder] = useState('asc');
   const [rewardPoints, setRewardPoints] = useState(0);
-  
+
   useEffect(() => {
     if (!signedAccountId) {
       router.push('/');
@@ -52,7 +53,6 @@ export default function TodoApp() {
         method: 'get_account_reward_points',
         args: { account_id: signedAccountId }
       });
-      console.log('points', points);
       setRewardPoints(points);
 
       const rewards = await wallet.viewMethod({
@@ -261,25 +261,26 @@ export default function TodoApp() {
             {showCompleted ? 'Hide Completed' : 'Show Completed'}
           </button>
           <button className="btn btn-secondary" onClick={() => setShowRewards(!showRewards)}>
-            {showRewards ? 'Hide Rewards' : 'Show Rewards'}
+            {showRewards ? 'Show Tasks' : 'Show Rewards'}
           </button>
           <button className="btn btn-secondary" onClick={() => setIsSortDialogOpen(true)}>Sort</button>
           <div className={main_styles.flexGrow}>
             <RewardPoints points={rewardPoints} />
           </div>
         </div>
-        <TaskList
-          tasks={sortedTasks}
-          markComplete={markComplete}
-          handleEditClick={handleEditClick}
-          removeTask={removeTask}
-          showCompleted={showCompleted}
-          truncateText={truncateText}
-          getPriorityColor={getPriorityColor}
-          getPriorityClassName={getPriorityClassName}
-          formatEstimatedTime={formatEstimatedTime}
-        />
-        {showRewards && (
+        {!showRewards ? (
+          <TaskList
+            tasks={sortedTasks}
+            markComplete={markComplete}
+            handleEditClick={handleEditClick}
+            removeTask={removeTask}
+            showCompleted={showCompleted}
+            truncateText={truncateText}
+            getPriorityColor={getPriorityColor}
+            getPriorityClassName={getPriorityClassName}
+            formatEstimatedTime={formatEstimatedTime}
+          />
+        ) : (
           <RewardList
             rewards={rewards}
             redeemReward={redeemReward}
@@ -314,4 +315,3 @@ export default function TodoApp() {
     </main>
   );
 }
-
