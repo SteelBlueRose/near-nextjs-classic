@@ -52,6 +52,7 @@ export default function TodoApp() {
         method: 'get_account_reward_points',
         args: { account_id: signedAccountId }
       });
+      console.log('points', points);
       setRewardPoints(points);
 
       const rewards = await wallet.viewMethod({

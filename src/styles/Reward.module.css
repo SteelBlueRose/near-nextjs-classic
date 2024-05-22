@@ -1,7 +1,13 @@
-/* styles/Rewards.module.css */
+.rewardList {
+  width: 100%;
+  margin-top: 1rem;
+  max-height: 25vh;
+  overflow-y: auto;
+}
 
 .reward {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   background: #f9f9f9;
   border: 1px solid #ddd;
@@ -11,47 +17,62 @@
   transition: background 0.3s ease;
 }
 
-.reward:hover {
-  background: #e0e7ed;
+.rewardLeft {
+  display: flex;
+  align-items: center;
 }
 
 .rewardContent {
-  flex-grow: 1;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 
-.rewardCost {
+.rewardContent h3 {
   font-size: 1.2rem;
+  margin: 0;
+}
+
+.rewardContent p {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.rewardPointsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f1f1f1;
+  border-radius: 20px;
+  padding: 5px 10px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  gap: 10px;
+}
+
+.rewardPoints {
   color: #bb9457;
   font-weight: bold;
 }
 
-.reward.highlight {
-  background-color: #fffacd !important;
-  transition: background-color 2s;
+.rewardRight {
+  display: flex;
+  align-items: center;
 }
 
-.rewardPointsContainer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #f1f1f1;
-    border-radius: 20px;
-    padding: 5px 10px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-    gap: 10px;
-  }
-  
-  .rewardPoints {
-    color: #bb9457;
-    margin-left: 5px;
-    font-weight: bold;
-  }
-  
-  .rewardList {
-    margin-top: 2rem;
-  }
-  
+.buttonContainer {
+  display: flex;
+  align-items: center;
+}
+
+.truncatedText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 400px;
+}
+
+.insideBtn {
+  margin-right: 10px;
+}

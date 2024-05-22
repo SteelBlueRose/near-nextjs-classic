@@ -2,6 +2,8 @@
 .taskList {
   width: 100%;
   margin-top: 1rem;
+  max-height: 55vh;
+  overflow-y: auto;
 }
 
 .task {
