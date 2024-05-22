@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '@/styles/app.module.css';
+import styles from '@/styles/Dialog.module.css';
 
 const SortDialog = ({ isSortDialogOpen, setIsSortDialogOpen, sortType, setSortType, sortOrder, setSortOrder }) => {
   return isSortDialogOpen && (

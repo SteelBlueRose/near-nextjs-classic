@@ -1,0 +1,173 @@
+/* styles/TaskList.module.css */
+.taskList {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.task {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 10px;
+  transition: background 0.3s ease;
+}
+
+.task.completed {
+  background: #e2ece2;
+}
+
+.task.completed span {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.taskLeft {
+  display: flex;
+  align-items: center;
+}
+
+.checkboxContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: #fff;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  margin-right: 10px;
+  position: relative;
+}
+
+.checkboxContainer input[type="checkbox"] {
+  transform: scale(1.75);
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.checkboxContainer:before {
+  content: "";
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.checkboxContainer:hover:before {
+  content: "✔";
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: #368f8b;
+}
+
+.taskContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.taskContent h3 {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.taskContent p {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.taskMeta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.taskRight {
+  display: flex;
+  align-items: center;
+}
+
+.priorityFlagContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+}
+
+.priorityFlag {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.priorityFlag.blue {
+  background-color: #00BFFF;
+  color: #E0F7FF;
+}
+
+.priorityFlag.yellow {
+  background-color: #FFD700;
+  color: #FFF8DC;
+}
+
+.priorityFlag.red {
+  background-color: #FF4500;
+  color: #FFDAB9;
+}
+
+.priorityFlag.grey {
+  background-color: #A9A9A9;
+  color: #E0E0E0;
+}
+
+.rewardPointsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f1f1f1;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+  width: 50px;
+  height: 40px;
+  margin-right: 10px;
+}
+
+.rewardPoints {
+  color: #bb9457;
+  font-weight: bold;
+}
+
+.truncatedText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.buttonContainer {
+  display: flex;
+  align-items: center;
+}
