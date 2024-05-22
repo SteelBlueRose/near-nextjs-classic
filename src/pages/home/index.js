@@ -12,6 +12,7 @@ import SortDialog from '@/components/SortDialog';
 import RewardPoints from '@/components/RewardPoints';
 import OptimizeTasks from '@/components/OptimizeTasks';
 
+
 const CONTRACT = TodoListContract;
 
 export default function TodoApp() {
