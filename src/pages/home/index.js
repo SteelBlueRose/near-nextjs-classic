@@ -11,6 +11,8 @@ import RewardForm from '@/components/RewardForm';
 import SortDialog from '@/components/SortDialog';
 import RewardPoints from '@/components/RewardPoints';
 import CompletedTasksToday from '@/components/CompletedTasksToday';
+import TaskChart from '@/components/TaskChart';
+import PeriodDialog from '@/components/PeriodDialog';
 
 import main_styles from '@/styles/Main.module.css';
 import button_styles from '@/styles/Button.module.css';
@@ -32,6 +34,9 @@ export default function TodoApp() {
   const [sortType, setSortType] = useState('time');
   const [sortOrder, setSortOrder] = useState('asc');
   const [rewardPoints, setRewardPoints] = useState(0);
+  const [isPeriodDialogOpen, setIsPeriodDialogOpen] = useState(false);
+  const [period, setPeriod] = useState('week');
+  const [chartData, setChartData] = useState({ labels: [], values: [] });
 
   useEffect(() => {
     if (!signedAccountId) {
@@ -60,6 +65,8 @@ export default function TodoApp() {
         method: 'get_rewards',
       });
       setRewards(rewards);
+
+      fetchCompletedTasks(period);
     };
 
     fetchTasksAndPoints();
@@ -73,7 +80,39 @@ export default function TodoApp() {
     return () => {
       router.events.off('routeChangeComplete', handleRouteChange);
     };
-  }, [wallet, router.events, signedAccountId]);
+  }, [wallet, router.events, signedAccountId, period]);
+
+  const fetchCompletedTasks = async (period) => {
+    const completedTasks = await wallet.viewMethod({
+      contractId: CONTRACT,
+      method: 'get_completed_tasks_per_day',
+      args: { account_id: signedAccountId }
+    });
+
+    const today = new Date();
+    const labels = [];
+    const values = [];
+
+    if (period === 'week') {
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        const key = Math.floor(date.getTime() / 86400000).toString();
+        labels.push(date.toLocaleDateString('en-GB', { weekday: 'short' }));
+        values.push(completedTasks[key] || 0);
+      }
+    } else if (period === 'month') {
+      for (let i = 29; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        const key = Math.floor(date.getTime() / 86400000).toString();
+        labels.push(date.getDate());
+        values.push(completedTasks[key] || 0);
+      }
+    }
+
+    setChartData({ labels, values });
+  };
 
   const markComplete = async (taskId) => {
     try {
@@ -290,10 +329,11 @@ export default function TodoApp() {
           )}
         </div>
         <div className={main_styles.rightBlock}>
-        <div className={main_styles.buttonContainerRight}>
-          <button className="btn btn-primary">Dashboard</button>
-          <CompletedTasksToday />
-        </div>
+          <div className={main_styles.buttonContainerRight}>
+            <button className="btn btn-primary" onClick={() => setIsPeriodDialogOpen(true)}>Dashboard</button>
+            <CompletedTasksToday />
+          </div>
+          <TaskChart key={period} data={chartData} />
         </div>
       </div>
       <AddTaskForm
@@ -319,6 +359,11 @@ export default function TodoApp() {
         setSortType={setSortType}
         sortOrder={sortOrder}
         setSortOrder={setSortOrder}
+      />
+      <PeriodDialog
+        isOpen={isPeriodDialogOpen}
+        onClose={() => setIsPeriodDialogOpen(false)}
+        setPeriod={setPeriod}
       />
     </main>
   );
