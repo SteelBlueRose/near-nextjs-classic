@@ -8,31 +8,44 @@
 
 .container {
   display: flex;
+  align-items: flex-start;
   gap: 2rem;
   width: 100%; 
   margin-top: 2rem;
   max-width: 1400px;
 }
 
-.block {
+.leftBlock {
   background-color: #ffffff;
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 55%;
+  min-height: 10rem;
+  align-self: flex-start;
 }
 
-.center {
-  flex-grow: 1;
-}
-
-.dashboard {
-  display: flex;
-  align-items: start;
-  justify-content: center;
+.rightBlock {
   background-color: #ffffff;
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  flex: 1;
+  width: 55%;
+  height: 20rem;
+  align-self: flex-start;
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.buttonContainerRight {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
 }

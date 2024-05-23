@@ -1,7 +1,7 @@
 .rewardList {
   width: 100%;
   margin-top: 1rem;
-  max-height: 80vh;
+  max-height: 100vh;
   overflow-y: auto;
 }
 
@@ -41,7 +41,7 @@
 .rewardPointsContainer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   background-color: #f1f1f1;
   border-radius: 20px;
   padding: 5px 10px;
@@ -54,6 +54,7 @@
 .rewardPoints {
   color: #bb9457;
   font-weight: bold;
+  text-align: center;
 }
 
 .rewardRight {

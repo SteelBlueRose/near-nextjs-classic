@@ -10,6 +10,7 @@ import EditTaskForm from '@/components/EditTaskForm';
 import RewardForm from '@/components/RewardForm';
 import SortDialog from '@/components/SortDialog';
 import RewardPoints from '@/components/RewardPoints';
+import CompletedTasksToday from '@/components/CompletedTasksToday';
 
 import main_styles from '@/styles/Main.module.css';
 import button_styles from '@/styles/Button.module.css';
@@ -253,7 +254,7 @@ export default function TodoApp() {
   return (
     <main className={main_styles.main}>
       <div className={main_styles.container}>
-        <div className={main_styles.block}>
+        <div className={main_styles.leftBlock}>
           <div className={button_styles.buttonContainer}>
             <button className="btn btn-primary" onClick={() => setIsAddDialogOpen(true)}>Add a To Do</button>
             <button className="btn btn-primary" onClick={() => setIsAddRewardDialogOpen(true)}>Add a Reward</button>
@@ -288,8 +289,11 @@ export default function TodoApp() {
             />
           )}
         </div>
-        <div className={main_styles.dashboard}>
+        <div className={main_styles.rightBlock}>
+        <div className={main_styles.buttonContainerRight}>
           <button className="btn btn-primary">Dashboard</button>
+          <CompletedTasksToday />
+        </div>
         </div>
       </div>
       <AddTaskForm
