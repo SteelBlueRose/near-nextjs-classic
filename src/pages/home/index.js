@@ -1,7 +1,21 @@
 import { useState, useEffect, useContext } from 'react';
-import { NearContext } from '@/context';
 import { useRouter } from 'next/router';
-import { TodoListContract } from '../../config';
+import { NearContext } from '@/context';
+import { useNear } from '@/hooks/useNear';
+import {
+  markComplete,
+  saveTask,
+  addTask,
+  removeTask,
+  addReward,
+  removeReward,
+  redeemReward,
+  truncateText,
+  getPriorityColor,
+  getPriorityClassName,
+  formatEstimatedTime,
+  sortTasks
+} from '@/utils/taskHandlers';
 
 import TaskList from '@/components/TaskList';
 import RewardList from '@/components/RewardList';
@@ -16,15 +30,10 @@ import PeriodDialog from '@/components/PeriodDialog';
 
 import main_styles from '@/styles/Main.module.css';
 import button_styles from '@/styles/Button.module.css';
-const CONTRACT = TodoListContract;
 
-export default function TodoApp() {
-  const { signedAccountId, wallet } = useContext(NearContext);
+const TodoApp = () => {
   const router = useRouter();
-  const [tasks, setTasks] = useState([]);
-  const [rewards, setRewards] = useState([]);
   const [currentTask, setCurrentTask] = useState(null);
-  const [loggedIn, setLoggedIn] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAddRewardDialogOpen, setIsAddRewardDialogOpen] = useState(false);
@@ -33,262 +42,20 @@ export default function TodoApp() {
   const [isSortDialogOpen, setIsSortDialogOpen] = useState(false);
   const [sortType, setSortType] = useState('time');
   const [sortOrder, setSortOrder] = useState('asc');
-  const [rewardPoints, setRewardPoints] = useState(0);
   const [isPeriodDialogOpen, setIsPeriodDialogOpen] = useState(false);
   const [period, setPeriod] = useState('week');
-  const [chartData, setChartData] = useState({ labels: [], values: [] });
+
+  const { signedAccountId, wallet } = useContext(NearContext);
+  const { tasks, setTasks, rewards, setRewards, rewardPoints, 
+    chartData, setRewardPoints } = useNear(signedAccountId, period);
 
   useEffect(() => {
     if (!signedAccountId) {
       router.push('/');
-      return;
     }
-    setLoggedIn(!!signedAccountId);
   }, [signedAccountId, router]);
 
-  useEffect(() => {
-    if (!wallet || !signedAccountId) return;
-
-    const fetchTasksAndPoints = async () => {
-      const tasks = await wallet.viewMethod({ contractId: CONTRACT, method: 'get_tasks' });
-      setTasks(tasks);
-
-      const points = await wallet.viewMethod({
-        contractId: CONTRACT,
-        method: 'get_account_reward_points',
-        args: { account_id: signedAccountId }
-      });
-      setRewardPoints(points);
-
-      const rewards = await wallet.viewMethod({
-        contractId: CONTRACT,
-        method: 'get_rewards',
-      });
-      setRewards(rewards);
-
-      fetchCompletedTasks(period);
-    };
-
-    fetchTasksAndPoints();
-
-    const handleRouteChange = () => {
-      fetchTasksAndPoints();
-    };
-
-    router.events.on('routeChangeComplete', handleRouteChange);
-
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChange);
-    };
-  }, [wallet, router.events, signedAccountId, period]);
-
-  const fetchCompletedTasks = async (period) => {
-    const completedTasks = await wallet.viewMethod({
-      contractId: CONTRACT,
-      method: 'get_completed_tasks_per_day',
-      args: { account_id: signedAccountId }
-    });
-
-    const today = new Date();
-    const labels = [];
-    const values = [];
-
-    if (period === 'week') {
-      for (let i = 6; i >= 0; i--) {
-        const date = new Date(today);
-        date.setDate(today.getDate() - i);
-        const key = Math.floor(date.getTime() / 86400000).toString();
-        labels.push(date.toLocaleDateString('en-GB', { weekday: 'short' }));
-        values.push(completedTasks[key] || 0);
-      }
-    } else if (period === 'month') {
-      for (let i = 29; i >= 0; i--) {
-        const date = new Date(today);
-        date.setDate(today.getDate() - i);
-        const key = Math.floor(date.getTime() / 86400000).toString();
-        labels.push(date.getDate());
-        values.push(completedTasks[key] || 0);
-      }
-    }
-
-    setChartData({ labels, values });
-  };
-
-  const markComplete = async (taskId) => {
-    try {
-      await wallet.callMethod({
-        contractId: CONTRACT,
-        method: 'mark_complete',
-        args: { id: taskId },
-      });
-
-      const updatedTasks = await wallet.viewMethod({ contractId: CONTRACT, method: 'get_tasks' });
-      setTasks(updatedTasks);
-    } catch (error) {
-      console.error('Failed to sign and send transaction', error);
-    }
-  };
-
-  const handleEditClick = (task) => {
-    if (!task.completed) {
-      setCurrentTask(task);
-      setIsEditDialogOpen(true);
-    }
-  };
-
-  const saveTask = async (taskData) => {
-    const { id, title, description, priority, deadline, estimated_time, reward_points } = taskData;
-    await wallet.callMethod({
-      contractId: CONTRACT,
-      method: 'update_task',
-      args: {
-        id,
-        title,
-        description,
-        priority,
-        deadline,
-        estimated_time,
-        reward_points,
-      },
-    });
-    const tasks = await wallet.viewMethod({ contractId: CONTRACT, method: 'get_tasks' });
-    setTasks(tasks);
-    setIsEditDialogOpen(false);
-  };
-
-  const addTask = async (taskData) => {
-    const { title, description, priority, deadline, estimated_time, reward_points } = taskData;
-    setIsAddDialogOpen(false);
-    await wallet.callMethod({
-      contractId: CONTRACT,
-      method: 'add_task',
-      args: {
-        title,
-        description,
-        priority,
-        deadline,
-        estimated_time,
-        reward_points,
-      },
-    });
-    const tasks = await wallet.viewMethod({ contractId: CONTRACT, method: 'get_tasks' });
-    setTasks(tasks);
-  };
-
-  const addReward = async (reward) => {
-    await wallet.callMethod({
-      contractId: CONTRACT,
-      method: 'add_reward',
-      args: reward,
-    });
-    const rewards = await wallet.viewMethod({ contractId: CONTRACT, method: 'get_rewards' });
-    setRewards(rewards);
-    setIsAddRewardDialogOpen(false);
-  };
-
-  const removeTask = async (taskId) => {
-    await wallet.callMethod({
-      contractId: CONTRACT,
-      method: 'remove_task',
-      args: { id: taskId },
-    });
-    const tasks = await wallet.viewMethod({ contractId: CONTRACT, method: 'get_tasks' });
-    setTasks(tasks);
-  };
-
-  const removeReward = async (rewardId) => {
-    await wallet.callMethod({
-      contractId: CONTRACT,
-      method: 'remove_reward',
-      args: { id: rewardId },
-    });
-    const rewards = await wallet.viewMethod({ contractId: CONTRACT, method: 'get_rewards' });
-    setRewards(rewards);
-  };
-
-  const redeemReward = async (rewardId, cost) => {
-    if (rewardPoints < cost) {
-      return;
-    }
-
-    const success = await wallet.callMethod({
-      contractId: CONTRACT,
-      method: 'redeem_reward',
-      args: { id: rewardId },
-    });
-
-    if (success) {
-      const points = await wallet.viewMethod({
-        contractId: CONTRACT,
-        method: 'get_account_reward_points',
-        args: { account_id: signedAccountId }
-      });
-      setRewardPoints(points);
-
-      const rewards = await wallet.viewMethod({ contractId: CONTRACT, method: 'get_rewards' });
-      setRewards(rewards);
-
-      const rewardElement = document.getElementById(`reward-${rewardId}`);
-      if (rewardElement) {
-        rewardElement.classList.add('highlight');
-        setTimeout(() => rewardElement.classList.remove('highlight'), 2000);
-      }
-    }
-  };
-
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case 1: return '#00BFFF'; // blue
-      case 2: return '#FFD700'; // yellow
-      case 3: return '#FF4500'; // red
-      default: return '#A9A9A9'; // grey
-    }
-  };
-
-  const getPriorityClassName = (priority) => {
-    switch (priority) {
-      case 1: return `${button_styles.priorityFlag} ${button_styles.blue}`;
-      case 2: return `${button_styles.priorityFlag} ${button_styles.yellow}`;
-      case 3: return `${button_styles.priorityFlag} ${button_styles.red}`;
-      default: return `${button_styles.priorityFlag} ${button_styles.grey}`;
-    }
-  };
-
-  const formatEstimatedTime = (time) => {
-    if (isNaN(time) || time === null || time === 0) return '';
-    return `${time.toFixed(2)} hours`;
-  };
-
-  const sortedTasks = tasks.slice().sort((a, b) => {
-    if (a.completed !== b.completed) {
-      return a.completed - b.completed;
-    }
-
-    let compareA, compareB;
-    if (sortType === 'time') {
-      compareA = a.estimated_time || 0;
-      compareB = b.estimated_time || 0;
-    } else if (sortType === 'deadline') {
-      compareA = a.deadline || 0;
-      compareB = b.deadline || 0;
-    } else if (sortType === 'reward_points') {
-      compareA = a.reward_points || 0;
-      compareB = b.reward_points || 0;
-    }
-
-    if (sortOrder === 'asc') {
-      return compareA - compareB;
-    } else {
-      return compareB - compareA;
-    }
-  });
-
-  const truncateText = (text, maxLength) => {
-    if (text.length > maxLength) {
-      return text.slice(0, maxLength) + '...';
-    }
-    return text;
-  };
+  const sortedTasks = sortTasks(tasks, sortType, sortOrder);
 
   return (
     <main className={main_styles.main}>
@@ -311,9 +78,14 @@ export default function TodoApp() {
           {!showRewards ? (
             <TaskList
               tasks={sortedTasks}
-              markComplete={markComplete}
-              handleEditClick={handleEditClick}
-              removeTask={removeTask}
+              markComplete={(taskId) => markComplete(wallet, taskId, setTasks)}
+              handleEditClick={(task) => {
+                if (!task.completed) {
+                  setCurrentTask(task);
+                  setIsEditDialogOpen(true);
+                }
+              }}
+              removeTask={(taskId) => removeTask(wallet, taskId, setTasks)}
               showCompleted={showCompleted}
               truncateText={truncateText}
               getPriorityColor={getPriorityColor}
@@ -323,8 +95,8 @@ export default function TodoApp() {
           ) : (
             <RewardList
               rewards={rewards}
-              redeemReward={redeemReward}
-              removeReward={removeReward}
+              redeemReward={(rewardId, cost) => redeemReward(wallet, rewardId, cost, rewardPoints, setRewardPoints, setRewards)}
+              removeReward={(rewardId) => removeReward(wallet, rewardId, setRewards)}
             />
           )}
         </div>
@@ -339,18 +111,18 @@ export default function TodoApp() {
       <AddTaskForm
         isOpen={isAddDialogOpen}
         onClose={() => setIsAddDialogOpen(false)}
-        addTask={addTask}
+        addTask={(taskData) => addTask(wallet, taskData, setTasks, setIsAddDialogOpen)}
       />
       <EditTaskForm
         isOpen={isEditDialogOpen}
         onClose={() => setIsEditDialogOpen(false)}
         currentTask={currentTask}
-        saveTask={saveTask}
+        saveTask={(taskData) => saveTask(wallet, taskData, setTasks, setIsEditDialogOpen)}
       />
       <RewardForm
         isAddRewardDialogOpen={isAddRewardDialogOpen}
         setIsAddRewardDialogOpen={setIsAddRewardDialogOpen}
-        addReward={addReward}
+        addReward={(reward) => addReward(wallet, reward, setRewards, setIsAddRewardDialogOpen)}
       />
       <SortDialog
         isSortDialogOpen={isSortDialogOpen}
@@ -367,4 +139,6 @@ export default function TodoApp() {
       />
     </main>
   );
-}
+};
+
+export default TodoApp;
