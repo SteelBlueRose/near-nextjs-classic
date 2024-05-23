@@ -1,55 +1,152 @@
 import { useEffect, useState, useContext } from 'react';
 import { NearContext } from '@/context';
 import { TodoListContract } from '../config';
-import { useRouter } from 'next/router';
 
-export const useNear = (signedAccountId, period) => {
+export const useNear = (accountId) => {
   const { wallet } = useContext(NearContext);
   const [tasks, setTasks] = useState([]);
   const [rewards, setRewards] = useState([]);
   const [rewardPoints, setRewardPoints] = useState(0);
   const [chartData, setChartData] = useState({ labels: [], values: [] });
-  const router = useRouter();
 
   useEffect(() => {
-    if (!wallet || !signedAccountId) return;
+    if (!wallet || !accountId) return;
 
-    const fetchTasksAndPoints = async () => {
-      const tasks = await wallet.viewMethod({ contractId: TodoListContract, method: 'get_tasks' });
-      setTasks(tasks);
-
-      const points = await wallet.viewMethod({
+    const fetchTasksAndRewards = async () => {
+      const tasks = await wallet.viewMethod({
         contractId: TodoListContract,
-        method: 'get_account_reward_points',
-        args: { account_id: signedAccountId }
+        method: 'get_tasks',
+        args: { account_id: accountId }
       });
-      setRewardPoints(points);
+      setTasks(tasks);
 
       const rewards = await wallet.viewMethod({
         contractId: TodoListContract,
         method: 'get_rewards',
+        args: { account_id: accountId }
       });
       setRewards(rewards);
 
-      fetchCompletedTasks(period);
+      const points = await wallet.viewMethod({
+        contractId: TodoListContract,
+        method: 'get_account_reward_points',
+        args: { account_id: accountId }
+      });
+      setRewardPoints(points);
+
+      fetchCompletedTasks('week'); // Default to weekly chart data
     };
 
-    fetchTasksAndPoints();
+    fetchTasksAndRewards();
+  }, [wallet, accountId]);
 
-    const handleRouteChange = () => {
-      fetchTasksAndPoints();
-    };
+  const addTask = async (taskData) => {
+    await wallet.callMethod({
+      contractId: TodoListContract,
+      method: 'add_task',
+      args: taskData,
+      gas: '300000000000000',
+      deposit: '0'
+    });
+    const tasks = await wallet.viewMethod({
+      contractId: TodoListContract,
+      method: 'get_tasks',
+      args: { account_id: accountId }
+    });
+    setTasks(tasks);
+  };
 
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChange);
-    };
-  }, [wallet, signedAccountId, period]);
+  const removeTask = async (taskId) => {
+    await wallet.callMethod({
+      contractId: TodoListContract,
+      method: 'remove_task',
+      args: { id: taskId },
+      gas: '300000000000000',
+      deposit: '0'
+    });
+    const tasks = await wallet.viewMethod({
+      contractId: TodoListContract,
+      method: 'get_tasks',
+      args: { account_id: accountId }
+    });
+    setTasks(tasks);
+  };
+
+  const markComplete = async (taskId) => {
+    await wallet.callMethod({
+      contractId: TodoListContract,
+      method: 'mark_complete',
+      args: { id: taskId },
+      gas: '300000000000000',
+      deposit: '0'
+    });
+    const tasks = await wallet.viewMethod({
+      contractId: TodoListContract,
+      method: 'get_tasks',
+      args: { account_id: accountId }
+    });
+    setTasks(tasks);
+  };
+
+  const addReward = async (rewardData) => {
+    await wallet.callMethod({
+      contractId: TodoListContract,
+      method: 'add_reward',
+      args: rewardData,
+      gas: '300000000000000',
+      deposit: '0'
+    });
+    const rewards = await wallet.viewMethod({
+      contractId: TodoListContract,
+      method: 'get_rewards',
+      args: { account_id: accountId }
+    });
+    setRewards(rewards);
+  };
+
+  const removeReward = async (rewardId) => {
+    await wallet.callMethod({
+      contractId: TodoListContract,
+      method: 'remove_reward',
+      args: { id: rewardId },
+      gas: '300000000000000',
+      deposit: '0'
+    });
+    const rewards = await wallet.viewMethod({
+      contractId: TodoListContract,
+      method: 'get_rewards',
+      args: { account_id: accountId }
+    });
+    setRewards(rewards);
+  };
+
+  const redeemReward = async (rewardId) => {
+    await wallet.callMethod({
+      contractId: TodoListContract,
+      method: 'redeem_reward',
+      args: { id: rewardId },
+      gas: '300000000000000',
+      deposit: '0'
+    });
+    const rewards = await wallet.viewMethod({
+      contractId: TodoListContract,
+      method: 'get_rewards',
+      args: { account_id: accountId }
+    });
+    setRewards(rewards);
+    const points = await wallet.viewMethod({
+      contractId: TodoListContract,
+      method: 'get_account_reward_points',
+      args: { account_id: accountId }
+    });
+    setRewardPoints(points);
+  };
 
   const fetchCompletedTasks = async (period) => {
     const completedTasks = await wallet.viewMethod({
       contractId: TodoListContract,
       method: 'get_completed_tasks_per_day',
-      args: { account_id: signedAccountId }
+      args: { account_id: accountId }
     });
 
     const today = new Date();
@@ -77,5 +174,17 @@ export const useNear = (signedAccountId, period) => {
     setChartData({ labels, values });
   };
 
-  return { tasks, rewards, rewardPoints, chartData, fetchCompletedTasks };
+  return {
+    tasks,
+    rewards,
+    rewardPoints,
+    chartData,
+    addTask,
+    removeTask,
+    markComplete,
+    addReward,
+    removeReward,
+    redeemReward,
+    fetchCompletedTasks
+  };
 };
