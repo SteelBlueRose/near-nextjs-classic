@@ -4,13 +4,13 @@
   align-items: flex-start;
   min-height: 100vh;
   background-color: #fff8e1;
-  margin-top: 2rem;
 }
 
 .container {
   display: flex;
   gap: 2rem;
   width: 100%; 
+  margin-top: 2rem;
   max-width: 1400px;
 }
 
