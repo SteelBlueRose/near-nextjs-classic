@@ -1,3 +1,4 @@
+// src/hooks/useNear.js
 import { useEffect, useState, useContext } from 'react';
 import { NearContext } from '@/context';
 import { TodoListContract } from '../config';
@@ -8,11 +9,12 @@ export const useNear = (accountId) => {
   const [rewards, setRewards] = useState([]);
   const [rewardPoints, setRewardPoints] = useState(0);
   const [chartData, setChartData] = useState({ labels: [], values: [] });
+  const [workingHours, setWorkingHours] = useState(null);
 
   useEffect(() => {
     if (!wallet || !accountId) return;
 
-    const fetchTasksAndRewards = async () => {
+    const fetchData = async () => {
       const tasks = await wallet.viewMethod({
         contractId: TodoListContract,
         method: 'get_tasks',
@@ -34,10 +36,17 @@ export const useNear = (accountId) => {
       });
       setRewardPoints(points);
 
-      fetchCompletedTasks('week'); // Default to weekly chart data
+      const hours = await wallet.viewMethod({
+        contractId: TodoListContract,
+        method: 'get_working_hours',
+        args: { account_id: accountId }
+      });
+      setWorkingHours(hours);
+
+      fetchCompletedTasks('week');
     };
 
-    fetchTasksAndRewards();
+    fetchData();
   }, [wallet, accountId]);
 
   const addTask = async (taskData) => {
@@ -174,17 +183,30 @@ export const useNear = (accountId) => {
     setChartData({ labels, values });
   };
 
+  const saveWorkingHours = async (workingHours) => {
+    await wallet.callMethod({
+      contractId: TodoListContract,
+      method: 'update_working_hours',
+      args: { working_hours: workingHours },
+      gas: '300000000000000',
+      deposit: '0'
+    });
+    setWorkingHours(workingHours);
+  };
+
   return {
     tasks,
     rewards,
     rewardPoints,
     chartData,
+    workingHours,
     addTask,
     removeTask,
     markComplete,
     addReward,
     removeReward,
     redeemReward,
-    fetchCompletedTasks
+    fetchCompletedTasks,
+    saveWorkingHours
   };
 };
