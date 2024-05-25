@@ -1,4 +1,3 @@
-// src/components/SettingsForm.js
 import React, { useState, useEffect } from 'react';
 import settings_styles from '@/styles/SettingsForm.module.css';
 
@@ -19,25 +18,12 @@ const timeStringToFloat = (timeString) => {
   return hours + minutes / 60;
 };
 
-const timeFloatToString = (timeFloat) => {
-  const hours = Math.floor(timeFloat);
-  const minutes = Math.round((timeFloat - hours) * 60);
-  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-};
-
-const SettingsForm = ({ isOpen, onClose, saveWorkingHours, initialWorkingHours }) => {
+const SettingsForm = ({ isOpen, onClose, saveWorkingHours, initialWorkingHours, showMessage }) => {
   const [workingHours, setWorkingHours] = useState(defaultWorkingHours);
 
   useEffect(() => {
     if (initialWorkingHours) {
-      const formattedWorkingHours = {};
-      for (const [day, hours] of Object.entries(initialWorkingHours)) {
-        formattedWorkingHours[day] = {
-          start_time: timeFloatToString(hours.start_time),
-          end_time: timeFloatToString(hours.end_time),
-        };
-      }
-      setWorkingHours(formattedWorkingHours);
+      setWorkingHours(initialWorkingHours);
     }
   }, [initialWorkingHours]);
 
@@ -68,6 +54,7 @@ const SettingsForm = ({ isOpen, onClose, saveWorkingHours, initialWorkingHours }
     <div className={`${settings_styles.dialogOverlay} ${isOpen ? settings_styles.show : ''}`}>
       <div className={settings_styles.dialog}>
         <h2>Working Hours</h2>
+        {showMessage && <p>Please set your working hours.</p>}
         <form onSubmit={handleSubmit}>
           {daysOfWeek.map((day) => (
             <div key={day} className={settings_styles.dayBlock}>

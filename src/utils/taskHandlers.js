@@ -16,7 +16,8 @@ export const markComplete = async (wallet, taskId, setTasks) => {
 };
 
 export const saveTask = async (wallet, taskData, setTasks, setIsEditDialogOpen) => {
-  const { id, title, description, priority, deadline, estimated_time, reward_points } = taskData;
+  const { id, title, description, priority, deadline, estimated_time, 
+    reward_points, preferred_start_time, preferred_end_time } = taskData;
   await wallet.callMethod({
     contractId: TodoListContract,
     method: 'update_task',
@@ -28,6 +29,8 @@ export const saveTask = async (wallet, taskData, setTasks, setIsEditDialogOpen) 
       deadline,
       estimated_time,
       reward_points,
+      preferred_start_time,
+      preferred_end_time,
     },
   });
   const tasks = await wallet.viewMethod({ contractId: TodoListContract, method: 'get_tasks' });
@@ -36,7 +39,8 @@ export const saveTask = async (wallet, taskData, setTasks, setIsEditDialogOpen) 
 };
 
 export const addTask = async (wallet, taskData, setTasks, setIsAddDialogOpen) => {
-  const { title, description, priority, deadline, estimated_time, reward_points } = taskData;
+  const { title, description, priority, deadline, estimated_time, 
+    reward_points, preferred_start_time, preferred_end_time } = taskData;
   setIsAddDialogOpen(false);
   await wallet.callMethod({
     contractId: TodoListContract,
@@ -48,6 +52,8 @@ export const addTask = async (wallet, taskData, setTasks, setIsAddDialogOpen) =>
       deadline,
       estimated_time,
       reward_points,
+      preferred_start_time,
+      preferred_end_time
     },
   });
   const tasks = await wallet.viewMethod({ contractId: TodoListContract, method: 'get_tasks' });
@@ -126,7 +132,7 @@ export const getPriorityColor = (priority) => {
   
   export const getPriorityClassName = (priority) => {
     switch (priority) {
-      case 1: return 'priorityBlue'; // Додайте відповідний клас у ваш CSS
+      case 1: return 'priorityBlue';
       case 2: return 'priorityYellow';
       case 3: return 'priorityRed';
       default: return 'priorityGrey';

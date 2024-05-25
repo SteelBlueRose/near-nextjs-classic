@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useState, useContext, useRef } from 'react';
+import { useEffect, useState, useContext, useRef} from 'react';
 import { NearContext } from '@/context';
 import { useNear } from '@/hooks/useNear';
 import CurrentDateTime from '@/components/CurrentDateTime';

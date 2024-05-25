@@ -50,3 +50,14 @@
   margin-bottom: 10px;
   text-align: left;
 }
+
+.inputTipNoTopMargin {
+  margin-top: 0px;
+}
+
+.hoursRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}

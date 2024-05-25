@@ -1,4 +1,3 @@
-// src/hooks/useNear.js
 import { useEffect, useState, useContext } from 'react';
 import { NearContext } from '@/context';
 import { TodoListContract } from '../config';
@@ -10,6 +9,7 @@ export const useNear = (accountId) => {
   const [rewardPoints, setRewardPoints] = useState(0);
   const [chartData, setChartData] = useState({ labels: [], values: [] });
   const [workingHours, setWorkingHours] = useState(null);
+  const [shouldShowSettingsForm, setShouldShowSettingsForm] = useState(false);
 
   useEffect(() => {
     if (!wallet || !accountId) return;
@@ -41,13 +41,26 @@ export const useNear = (accountId) => {
         method: 'get_working_hours',
         args: { account_id: accountId }
       });
-      setWorkingHours(hours);
+      if (!hours) {
+        setShouldShowSettingsForm(true);
+      }
+      setWorkingHours(hours || defaultWorkingHours);
 
       fetchCompletedTasks('week');
     };
 
     fetchData();
   }, [wallet, accountId]);
+
+  const defaultWorkingHours = {
+    monday: { start_time: 9.0, end_time: 16.0 },
+    tuesday: { start_time: 9.0, end_time: 16.0 },
+    wednesday: { start_time: 9.0, end_time: 16.0 },
+    thursday: { start_time: 9.0, end_time: 16.0 },
+    friday: { start_time: 9.0, end_time: 16.0 },
+    saturday: { start_time: 9.0, end_time: 16.0 },
+    sunday: { start_time: 9.0, end_time: 16.0 },
+  };
 
   const addTask = async (taskData) => {
     await wallet.callMethod({
@@ -207,6 +220,8 @@ export const useNear = (accountId) => {
     removeReward,
     redeemReward,
     fetchCompletedTasks,
-    saveWorkingHours
+    saveWorkingHours,
+    shouldShowSettingsForm,
+    defaultWorkingHours
   };
 };

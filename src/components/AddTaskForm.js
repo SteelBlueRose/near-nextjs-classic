@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '@/styles/Dialog.module.css';
 
-const AddTaskForm = ({ isOpen, onClose, addTask }) => {
+const AddTaskForm = ({ isOpen, onClose, addTask, workingHours }) => {
   const [taskData, setTaskData] = useState({
     title: '',
     description: '',
@@ -9,6 +9,8 @@ const AddTaskForm = ({ isOpen, onClose, addTask }) => {
     deadline: '',
     estimatedTime: 0,
     rewardPoints: 0,
+    preferred_start_time: '',
+    preferred_end_time: '',
   });
 
   const handleSave = () => {
@@ -18,8 +20,35 @@ const AddTaskForm = ({ isOpen, onClose, addTask }) => {
       priority: parseInt(taskData.priority),
       deadline: taskData.deadline ? new Date(taskData.deadline).getTime() : null,
       estimated_time: taskData.estimatedTime ? parseFloat(taskData.estimatedTime) : null,
-      reward_points: parseInt(taskData.rewardPoints) || 0,
+      reward_points: parseInt(taskData.rewardPoints),
+      preferred_start_time: taskData.preferred_start_time,
+      preferred_end_time: taskData.preferred_end_time,
     };
+
+    if (taskData.deadline) {
+      const dayOfWeek = new Date(taskData.deadline).toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+      const userWorkingHours = workingHours?.[dayOfWeek];
+
+      if (!userWorkingHours) {
+        alert(`No working hours set for ${dayOfWeek}.`);
+        return;
+      }
+
+      const startTime = parseFloat(taskData.preferred_start_time.replace(':', '.'));
+      const endTime = parseFloat(taskData.preferred_end_time.replace(':', '.'));
+      const workingStartTime = userWorkingHours.start_time;
+      const workingEndTime = userWorkingHours.end_time;
+
+      if (startTime >= endTime) {
+        alert('Preferred start time must be earlier than preferred end time.');
+        return;
+      }
+
+      if (startTime < workingStartTime || endTime > workingEndTime) {
+        alert('Preferred time slot must be within working hours.');
+        return;
+      }
+    }
 
     addTask(formattedTask);
     onClose();
@@ -35,6 +64,7 @@ const AddTaskForm = ({ isOpen, onClose, addTask }) => {
           value={taskData.title}
           onChange={(e) => setTaskData({ ...taskData, title: e.target.value })}
           className={styles.taskInput}
+          required
         />
         <p className={styles.inputTip}>Title</p>
         <input
@@ -58,6 +88,7 @@ const AddTaskForm = ({ isOpen, onClose, addTask }) => {
           value={taskData.deadline}
           onChange={(e) => setTaskData({ ...taskData, deadline: e.target.value })}
           className={styles.taskInput}
+          required
         />
         <p className={styles.inputTip}>Deadline</p>
         <input
@@ -67,16 +98,39 @@ const AddTaskForm = ({ isOpen, onClose, addTask }) => {
           value={taskData.estimatedTime}
           onChange={(e) => setTaskData({ ...taskData, estimatedTime: e.target.value })}
           className={styles.taskInput}
+          required
         />
-        <p className={styles.inputTip}>Estimated Time</p>
+        <p className={styles.inputTip}>Estimated Time in hours</p>
         <input
           type="number"
           placeholder="Reward Points"
           value={taskData.rewardPoints}
-          onChange={(e) => setTaskData({ ...taskData, rewardPoints: parseInt(e.target.value) || 0 })}
+          onChange={(e) => setTaskData({ ...taskData, rewardPoints: parseInt(e.target.value) })}
           className={styles.taskInput}
+          required
         />
         <p className={styles.inputTip}>Reward Points</p>
+        <div className={styles.hoursRow}>
+          <div>
+            <input
+              type="time"
+              value={taskData.preferred_start_time}
+              onChange={(e) => setTaskData({ ...taskData, preferred_start_time: e.target.value })}
+              required
+            />
+            <p className={`${styles.inputTip} ${styles.inputTipNoTopMargin}`}>Preferred start time slot</p>
+          </div>
+          <div>
+            <input
+              type="time"
+              value={taskData.preferred_end_time}
+              onChange={(e) => setTaskData({ ...taskData, preferred_end_time: e.target.value })}
+              required
+            />
+            <p className={`${styles.inputTip} ${styles.inputTipNoTopMargin}`}>Preferred end time slot</p>
+          </div>
+        </div>
+
         <div className={styles.taskButtons}>
           <button className="btn btn-success" onClick={handleSave}>Add</button>
           <button className="btn btn-danger" onClick={onClose}>Cancel</button>
