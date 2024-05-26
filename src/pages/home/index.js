@@ -44,6 +44,7 @@ const TodoApp = () => {
     rewards,
     rewardPoints,
     chartData,
+    workingHours,
     addTask,
     updateTask,
     removeTask,
@@ -122,6 +123,7 @@ const TodoApp = () => {
         isOpen={isAddDialogOpen}
         onClose={() => setIsAddDialogOpen(false)}
         addTask={addTask}
+        workingHours={workingHours}
       />
       <EditTaskForm
         isOpen={isEditDialogOpen}

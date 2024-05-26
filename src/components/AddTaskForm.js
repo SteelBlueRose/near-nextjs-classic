@@ -13,6 +13,11 @@ const AddTaskForm = ({ isOpen, onClose, addTask, workingHours }) => {
     preferred_end_time: '',
   });
 
+  const timeStringToFloat = (timeString) => {
+    const [hours, minutes] = timeString.split(':').map(Number);
+    return hours + minutes / 60;
+  };
+
   const handleSave = () => {
     const formattedTask = {
       title: taskData.title,
@@ -21,38 +26,38 @@ const AddTaskForm = ({ isOpen, onClose, addTask, workingHours }) => {
       deadline: taskData.deadline ? new Date(taskData.deadline).getTime() : null,
       estimated_time: taskData.estimatedTime ? parseFloat(taskData.estimatedTime) : null,
       reward_points: parseInt(taskData.rewardPoints),
-      preferred_start_time: taskData.preferred_start_time,
-      preferred_end_time: taskData.preferred_end_time,
+      preferred_start_time: taskData.preferred_start_time ? timeStringToFloat(taskData.preferred_start_time) : null,
+      preferred_end_time: taskData.preferred_end_time ? timeStringToFloat(taskData.preferred_end_time) : null,
     };
-
+  
     if (taskData.deadline) {
       const dayOfWeek = new Date(taskData.deadline).toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
       const userWorkingHours = workingHours?.[dayOfWeek];
-
+  
       if (!userWorkingHours) {
         alert(`No working hours set for ${dayOfWeek}.`);
         return;
       }
-
-      const startTime = parseFloat(taskData.preferred_start_time.replace(':', '.'));
-      const endTime = parseFloat(taskData.preferred_end_time.replace(':', '.'));
+  
+      const startTime = timeStringToFloat(taskData.preferred_start_time);
+      const endTime = timeStringToFloat(taskData.preferred_end_time);
       const workingStartTime = userWorkingHours.start_time;
       const workingEndTime = userWorkingHours.end_time;
-
+  
       if (startTime >= endTime) {
         alert('Preferred start time must be earlier than preferred end time.');
         return;
       }
-
+  
       if (startTime < workingStartTime || endTime > workingEndTime) {
         alert('Preferred time slot must be within working hours.');
         return;
       }
     }
-
+  
     addTask(formattedTask);
     onClose();
-  };
+  };  
 
   return isOpen && (
     <div className={styles.dialogOverlay}>
