@@ -1,0 +1,67 @@
+.plannerContainer {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+  
+.header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 10px;
+}
+  
+.currentMonthYear {
+    margin: 0 20px;
+    font-size: 24px;
+    font-weight: bold;
+}
+  
+.calendar {
+    display: flex;
+    overflow-y: scroll;
+    height: calc(100vh - 150px);
+}
+  
+.hoursColumn {
+    display: flex;
+    flex-direction: column;
+    width: 50px;
+    margin-right: 10px;
+    margin-top: 20px;
+    flex-shrink: 0;
+}
+  
+.hoursColumn div {
+    height: 50px;
+    line-height: 150px;
+    border-bottom: 1px solid #ccc;
+    text-align: right;
+    padding-right: 5px;
+}
+  
+.weekDays {
+    display: flex;
+    flex-grow: 1;
+}
+  
+.dayColumn {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+  
+.dayHeader {
+    text-align: center;
+    font-weight: bold;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+}
+  
+.timeSlot {
+    height: 50px;
+    line-height: 50px;
+    border-left: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+}
