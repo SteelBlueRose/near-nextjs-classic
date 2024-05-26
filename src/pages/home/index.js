@@ -3,13 +3,6 @@ import { useRouter } from 'next/router';
 import { NearContext } from '@/context';
 import { useNear } from '@/hooks/useNear';
 import {
-  markComplete,
-  saveTask,
-  addTask,
-  removeTask,
-  addReward,
-  removeReward,
-  redeemReward,
   truncateText,
   getPriorityColor,
   getPriorityClassName,
@@ -32,6 +25,7 @@ import main_styles from '@/styles/Main.module.css';
 import button_styles from '@/styles/Button.module.css';
 
 const TodoApp = () => {
+  const { signedAccountId, wallet } = useContext(NearContext);
   const router = useRouter();
   const [currentTask, setCurrentTask] = useState(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -45,9 +39,20 @@ const TodoApp = () => {
   const [isPeriodDialogOpen, setIsPeriodDialogOpen] = useState(false);
   const [period, setPeriod] = useState('week');
 
-  const { signedAccountId, wallet } = useContext(NearContext);
-  const { tasks, setTasks, rewards, setRewards, rewardPoints, 
-    chartData, setRewardPoints, fetchCompletedTasks } = useNear(signedAccountId, period);
+  const {
+    tasks,
+    rewards,
+    rewardPoints,
+    chartData,
+    addTask,
+    updateTask,
+    removeTask,
+    markComplete,
+    addReward,
+    removeReward,
+    redeemReward,
+    fetchCompletedTasks,
+  } = useNear(signedAccountId);
 
   useEffect(() => {
     if (!signedAccountId) {
@@ -55,9 +60,10 @@ const TodoApp = () => {
     }
   }, [signedAccountId, router]);
 
-  useEffect(() => {
-    fetchCompletedTasks(period);
-  }, [period, fetchCompletedTasks]);
+  const handlePeriodChange = (newPeriod) => {
+    setPeriod(newPeriod);
+    fetchCompletedTasks(newPeriod);
+  };
 
   const sortedTasks = sortTasks(tasks, sortType, sortOrder);
 
@@ -82,14 +88,14 @@ const TodoApp = () => {
           {!showRewards ? (
             <TaskList
               tasks={sortedTasks}
-              markComplete={(taskId) => markComplete(wallet, taskId, setTasks)}
+              markComplete={markComplete}
               handleEditClick={(task) => {
                 if (!task.completed) {
                   setCurrentTask(task);
                   setIsEditDialogOpen(true);
                 }
               }}
-              removeTask={(taskId) => removeTask(wallet, taskId, setTasks)}
+              removeTask={removeTask}
               showCompleted={showCompleted}
               truncateText={truncateText}
               getPriorityColor={getPriorityColor}
@@ -99,8 +105,8 @@ const TodoApp = () => {
           ) : (
             <RewardList
               rewards={rewards}
-              redeemReward={(rewardId, cost) => redeemReward(wallet, rewardId, cost, rewardPoints, setRewardPoints, setRewards)}
-              removeReward={(rewardId) => removeReward(wallet, rewardId, setRewards)}
+              redeemReward={redeemReward}
+              removeReward={removeReward}
             />
           )}
         </div>
@@ -115,18 +121,18 @@ const TodoApp = () => {
       <AddTaskForm
         isOpen={isAddDialogOpen}
         onClose={() => setIsAddDialogOpen(false)}
-        addTask={(taskData) => addTask(wallet, taskData, setTasks, setIsAddDialogOpen)}
+        addTask={addTask}
       />
       <EditTaskForm
         isOpen={isEditDialogOpen}
         onClose={() => setIsEditDialogOpen(false)}
         currentTask={currentTask}
-        saveTask={(taskData) => saveTask(wallet, taskData, setTasks, setIsEditDialogOpen)}
+        saveTask={updateTask}
       />
       <RewardForm
         isAddRewardDialogOpen={isAddRewardDialogOpen}
         setIsAddRewardDialogOpen={setIsAddRewardDialogOpen}
-        addReward={(reward) => addReward(wallet, reward, setRewards, setIsAddRewardDialogOpen)}
+        addReward={addReward}
       />
       <SortDialog
         isSortDialogOpen={isSortDialogOpen}
@@ -139,7 +145,7 @@ const TodoApp = () => {
       <PeriodDialog
         isOpen={isPeriodDialogOpen}
         onClose={() => setIsPeriodDialogOpen(false)}
-        setPeriod={setPeriod}
+        setPeriod={handlePeriodChange}
       />
     </main>
   );
