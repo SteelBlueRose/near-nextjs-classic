@@ -11,7 +11,7 @@ import styles from '@/styles/Navigation.module.css';
 
 export const Navigation = () => {
   const { signedAccountId, wallet } = useContext(NearContext);
-  const { workingHours, saveWorkingHours } = useNear(signedAccountId);
+  const { workingHours, saveWorkingHours, shouldShowSettingsForm} = useNear(signedAccountId);
   const [label, setLabel] = useState('Loading...');
   const router = useRouter();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -60,6 +60,12 @@ export const Navigation = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    if (shouldShowSettingsForm) {
+      setIsSettingsOpen(true);
+    }
+  }, [shouldShowSettingsForm]);
 
   return (
     <nav className={`navbar navbar-expand-lg bg-primary ${styles.navbar}`}>

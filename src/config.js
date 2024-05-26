@@ -2,7 +2,7 @@ const contractPerNetwork = {
   mainnet: 'hello.near-examples.near',
   testnet: 'danylobadenko.testnet',
 };
-// testnet: 'time_man.testnet',
+
 const componentsPerNetwork = {
   mainnet: {
     socialDB: 'social.near',

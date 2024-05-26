@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styles from '@/styles/Dialog.module.css';
 
 const AddTaskForm = ({ isOpen, onClose, addTask, workingHours }) => {

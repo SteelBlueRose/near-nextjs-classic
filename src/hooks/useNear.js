@@ -15,52 +15,48 @@ export const useNear = (accountId) => {
     if (!wallet || !accountId) return;
 
     const fetchData = async () => {
-      const tasks = await wallet.viewMethod({
-        contractId: TodoListContract,
-        method: 'get_tasks',
-        args: { account_id: accountId }
-      });
-      setTasks(tasks);
+      try {
 
-      const rewards = await wallet.viewMethod({
-        contractId: TodoListContract,
-        method: 'get_rewards',
-        args: { account_id: accountId }
-      });
-      setRewards(rewards);
+        const tasks = await wallet.viewMethod({
+          contractId: TodoListContract,
+          method: 'get_tasks',
+          args: { account_id: accountId }
+        });
+        setTasks(tasks);
 
-      const points = await wallet.viewMethod({
-        contractId: TodoListContract,
-        method: 'get_account_reward_points',
-        args: { account_id: accountId }
-      });
-      setRewardPoints(points);
+        const rewards = await wallet.viewMethod({
+          contractId: TodoListContract,
+          method: 'get_rewards',
+          args: { account_id: accountId }
+        });
+        setRewards(rewards);
 
-      const hours = await wallet.viewMethod({
-        contractId: TodoListContract,
-        method: 'get_working_hours',
-        args: { account_id: accountId }
-      });
-      if (!hours) {
-        setShouldShowSettingsForm(true);
+        const points = await wallet.viewMethod({
+          contractId: TodoListContract,
+          method: 'get_account_reward_points',
+          args: { account_id: accountId }
+        });
+        setRewardPoints(points);
+
+        const hours = await wallet.viewMethod({
+          contractId: TodoListContract,
+          method: 'get_working_hours',
+          args: { account_id: accountId }
+        });
+        if (hours) {
+          setWorkingHours(hours);
+        } else {
+          setShouldShowSettingsForm(true);
+        }
+
+        fetchCompletedTasks('week');
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
       }
-      setWorkingHours(hours || defaultWorkingHours);
-
-      fetchCompletedTasks('week');
     };
 
     fetchData();
   }, [wallet, accountId]);
-
-  const defaultWorkingHours = {
-    monday: { start_time: 9.0, end_time: 16.0 },
-    tuesday: { start_time: 9.0, end_time: 16.0 },
-    wednesday: { start_time: 9.0, end_time: 16.0 },
-    thursday: { start_time: 9.0, end_time: 16.0 },
-    friday: { start_time: 9.0, end_time: 16.0 },
-    saturday: { start_time: 9.0, end_time: 16.0 },
-    sunday: { start_time: 9.0, end_time: 16.0 },
-  };
 
   const addTask = async (taskData) => {
     await wallet.callMethod({
@@ -70,6 +66,7 @@ export const useNear = (accountId) => {
       gas: '300000000000000',
       deposit: '0'
     });
+
     const tasks = await wallet.viewMethod({
       contractId: TodoListContract,
       method: 'get_tasks',
@@ -86,6 +83,7 @@ export const useNear = (accountId) => {
       gas: '300000000000000',
       deposit: '0'
     });
+
     const tasks = await wallet.viewMethod({
       contractId: TodoListContract,
       method: 'get_tasks',
@@ -102,11 +100,13 @@ export const useNear = (accountId) => {
       gas: '300000000000000',
       deposit: '0'
     });
+
     const tasks = await wallet.viewMethod({
       contractId: TodoListContract,
       method: 'get_tasks',
       args: { account_id: accountId }
     });
+
     setTasks(tasks);
   };
 
@@ -118,6 +118,7 @@ export const useNear = (accountId) => {
       gas: '300000000000000',
       deposit: '0'
     });
+
     const rewards = await wallet.viewMethod({
       contractId: TodoListContract,
       method: 'get_rewards',
@@ -134,6 +135,7 @@ export const useNear = (accountId) => {
       gas: '300000000000000',
       deposit: '0'
     });
+
     const rewards = await wallet.viewMethod({
       contractId: TodoListContract,
       method: 'get_rewards',
@@ -150,6 +152,7 @@ export const useNear = (accountId) => {
       gas: '300000000000000',
       deposit: '0'
     });
+    
     const rewards = await wallet.viewMethod({
       contractId: TodoListContract,
       method: 'get_rewards',
@@ -205,6 +208,7 @@ export const useNear = (accountId) => {
       deposit: '0'
     });
     setWorkingHours(workingHours);
+    setShouldShowSettingsForm(false);
   };
 
   return {
@@ -221,7 +225,6 @@ export const useNear = (accountId) => {
     redeemReward,
     fetchCompletedTasks,
     saveWorkingHours,
-    shouldShowSettingsForm,
-    defaultWorkingHours
+    shouldShowSettingsForm
   };
 };

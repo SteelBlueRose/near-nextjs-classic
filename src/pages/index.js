@@ -6,6 +6,8 @@ import { NearContext } from '@/context';
 
 export default function Home() {
   const { signedAccountId, wallet } = useContext(NearContext);
+  const router = useRouter();
+  
   const handleCLick = () => {
     if (signedAccountId) {
       router.push('/home');
@@ -13,7 +15,6 @@ export default function Home() {
       wallet.signIn();
     }
   };
-  const router = useRouter();
 
   return (
     <main className={home_styles.main}>

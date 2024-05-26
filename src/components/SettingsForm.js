@@ -3,27 +3,30 @@ import settings_styles from '@/styles/SettingsForm.module.css';
 
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-const defaultWorkingHours = {
-  monday: { start_time: '09:00', end_time: '16:00' },
-  tuesday: { start_time: '09:00', end_time: '16:00' },
-  wednesday: { start_time: '09:00', end_time: '16:00' },
-  thursday: { start_time: '09:00', end_time: '16:00' },
-  friday: { start_time: '09:00', end_time: '16:00' },
-  saturday: { start_time: '09:00', end_time: '16:00' },
-  sunday: { start_time: '09:00', end_time: '16:00' },
-};
-
 const timeStringToFloat = (timeString) => {
   const [hours, minutes] = timeString.split(':').map(Number);
   return hours + minutes / 60;
 };
 
+const floatToTimeString = (timeFloat) => {
+  const hours = Math.floor(timeFloat);
+  const minutes = Math.round((timeFloat - hours) * 60);
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+};
+
 const SettingsForm = ({ isOpen, onClose, saveWorkingHours, initialWorkingHours, showMessage }) => {
-  const [workingHours, setWorkingHours] = useState(defaultWorkingHours);
+  const [workingHours, setWorkingHours] = useState({});
 
   useEffect(() => {
     if (initialWorkingHours) {
-      setWorkingHours(initialWorkingHours);
+      const formattedWorkingHours = {};
+      for (const [day, hours] of Object.entries(initialWorkingHours)) {
+        formattedWorkingHours[day] = {
+          start_time: floatToTimeString(hours.start_time),
+          end_time: floatToTimeString(hours.end_time),
+        };
+      }
+      setWorkingHours(formattedWorkingHours);
     }
   }, [initialWorkingHours]);
 
