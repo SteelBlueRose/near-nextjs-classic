@@ -19,7 +19,7 @@
 .calendar {
     display: flex;
     overflow-y: scroll;
-    height: calc(100vh - 150px);
+    height: calc(100vh - 200px);
 }
   
 .hoursColumn {
@@ -27,17 +27,25 @@
     flex-direction: column;
     width: 50px;
     margin-right: 10px;
-    margin-top: 20px;
+    margin-top: 70px;
     flex-shrink: 0;
-}
+  }
   
-.hoursColumn div {
+  .hoursColumn div {
     height: 50px;
-    line-height: 150px;
+    line-height: 50px;
     border-bottom: 1px solid #ccc;
     text-align: right;
     padding-right: 5px;
-}
+  }
+  
+  .timeSlot {
+    height: 25px;
+    line-height: 25px;
+    border-left: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+  }
   
 .weekDays {
     display: flex;
@@ -57,18 +65,15 @@
     border-bottom: 1px solid #ccc;
     padding: 10px 0;
 }
-  
-.timeSlot {
-    height: 50px;
-    line-height: 50px;
-    border-left: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-}
 
 .highlight {
     background-color: rgba(0, 128, 0, 0.2); /* Light green background */
 }
+
+.breakHighlight {
+    background-color: rgba(255, 0, 0, 0.2); /* Light red background for breaks */
+}
+
 
 .buttonContainer {
     display: flex;

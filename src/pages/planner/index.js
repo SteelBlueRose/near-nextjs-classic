@@ -52,6 +52,34 @@ const Planner = () => {
     return hour >= start_time && hour < end_time;
   };
 
+  const isBreakHour = (day, hour, halfHour) => {
+    if (!breaks) return false;
+    const regularBreaks = breaks.regular_breaks || [];
+    const oneTimeBreaks = breaks.one_time_breaks || [];
+
+    const timeToFloat = (hour, halfHour) => hour + (halfHour ? 0.5 : 0);
+
+    // Check regular breaks
+    for (const break_ of regularBreaks) {
+      if (timeToFloat(hour, halfHour) >= break_.start_time && timeToFloat(hour, halfHour) < break_.end_time) {
+        return true;
+      }
+    }
+
+    // Check one-time breaks for the specific day
+    for (const break_ of oneTimeBreaks) {
+      const breakDate = new Date(break_.date).toDateString();
+      const currentDay = new Date(day).toDateString();
+      if (breakDate === currentDay) {
+        if (timeToFloat(hour, halfHour) >= break_.start_time && timeToFloat(hour, halfHour) < break_.end_time) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  };
+
   const weekDays = getWeekDays(currentWeek);
 
   return (
@@ -84,10 +112,14 @@ const Planner = () => {
                 </div>
                 <div className={styles.timeSlots}>
                   {Array.from({ length: 24 }).map((_, hour) => (
-                    <div
-                      key={hour}
-                      className={`${styles.timeSlot} ${isWorkingHour(dayName, hour) ? styles.highlight : ''}`}
-                    ></div>
+                    <React.Fragment key={hour}>
+                      <div
+                        className={`${styles.timeSlot} ${isWorkingHour(dayName, hour) ? styles.highlight : ''} ${isBreakHour(day, hour, false) ? styles.breakHighlight : ''}`}
+                      ></div>
+                      <div
+                        className={`${styles.timeSlot} ${isWorkingHour(dayName, hour + 0.5) ? styles.highlight : ''} ${isBreakHour(day, hour, true) ? styles.breakHighlight : ''}`}
+                      ></div>
+                    </React.Fragment>
                   ))}
                 </div>
               </div>
