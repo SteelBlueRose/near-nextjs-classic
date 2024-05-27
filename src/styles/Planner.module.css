@@ -69,3 +69,22 @@
 .highlight {
     background-color: rgba(0, 128, 0, 0.2); /* Light green background */
 }
+
+.buttonContainer {
+    display: flex;
+    gap: 10px;
+    margin-left: 20px;
+  }
+  
+  .buttonContainer button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #368f8b;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .buttonContainer button:hover {
+    background-color: #2b7a6b;
+  }

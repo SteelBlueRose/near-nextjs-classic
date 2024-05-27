@@ -1,12 +1,22 @@
-import React, { useState, useContext } from 'react';
-import styles from '@/styles/Planner.module.css';
+import React, { useState, useEffect, useContext } from 'react';
 import { NearContext } from '@/context';
+import AddBreakForm from '@/components/AddBreakForm';
+import EditBreaksForm from '@/components/EditBreaksForm';
 import { useNear } from '@/hooks/useNear';
+import styles from '@/styles/Planner.module.css';
 
 const Planner = () => {
   const { signedAccountId } = useContext(NearContext);
-  const { workingHours } = useNear(signedAccountId);
+  const { breaks, fetchBreaks, addBreak, updateBreak, removeBreak, workingHours } = useNear(signedAccountId, 'week');
   const [currentWeek, setCurrentWeek] = useState(new Date());
+  const [isAddBreakFormOpen, setAddBreakFormOpen] = useState(false);
+  const [isEditBreaksFormOpen, setEditBreaksFormOpen] = useState(false);
+
+  useEffect(() => {
+    if (signedAccountId) {
+      fetchBreaks(signedAccountId);
+    }
+  }, [signedAccountId, fetchBreaks]);
 
   const handlePrevWeek = () => {
     setCurrentWeek(prevWeek => {
@@ -36,18 +46,10 @@ const Planner = () => {
     return weekDays;
   };
 
-  const isWithinWorkingHours = (day, hour) => {
-    if (!workingHours) return false;
-
-    const dayOfWeek = day.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-    const userWorkingHours = workingHours?.[dayOfWeek];
-
-    if (!userWorkingHours) return false;
-
-    const startTime = parseFloat(userWorkingHours.start_time);
-    const endTime = parseFloat(userWorkingHours.end_time);
-
-    return hour >= startTime && hour < endTime;
+  const isWorkingHour = (day, hour) => {
+    if (!workingHours || !workingHours[day]) return false;
+    const { start_time, end_time } = workingHours[day];
+    return hour >= start_time && hour < end_time;
   };
 
   const weekDays = getWeekDays(currentWeek);
@@ -60,6 +62,10 @@ const Planner = () => {
           {currentWeek.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
         </div>
         <button onClick={handleNextWeek}>&rarr;</button>
+        <div className={styles.buttonContainer}>
+          <button onClick={() => setAddBreakFormOpen(true)}>Add Break</button>
+          <button onClick={() => setEditBreaksFormOpen(true)}>Edit Breaks</button>
+        </div>
       </div>
       <div className={styles.calendar}>
         <div className={styles.hoursColumn}>
@@ -68,24 +74,39 @@ const Planner = () => {
           ))}
         </div>
         <div className={styles.weekDays}>
-          {weekDays.map((day, index) => (
-            <div key={index} className={styles.dayColumn}>
-              <div className={styles.dayHeader}>
-                <div>{day.toLocaleDateString('en-US', { weekday: 'short' })}</div>
-                <div>{day.getDate()}</div>
+          {weekDays.map((day, index) => {
+            const dayName = day.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+            return (
+              <div key={index} className={styles.dayColumn}>
+                <div className={styles.dayHeader}>
+                  <div>{day.toLocaleDateString('en-US', { weekday: 'short' })}</div>
+                  <div>{day.getDate()}</div>
+                </div>
+                <div className={styles.timeSlots}>
+                  {Array.from({ length: 24 }).map((_, hour) => (
+                    <div
+                      key={hour}
+                      className={`${styles.timeSlot} ${isWorkingHour(dayName, hour) ? styles.highlight : ''}`}
+                    ></div>
+                  ))}
+                </div>
               </div>
-              <div className={styles.timeSlots}>
-                {Array.from({ length: 24 }).map((_, hour) => (
-                  <div
-                    key={hour}
-                    className={`${styles.timeSlot} ${isWithinWorkingHours(day, hour) ? styles.highlight : ''}`}
-                  ></div>
-                ))}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
+      <AddBreakForm
+        isOpen={isAddBreakFormOpen}
+        onClose={() => setAddBreakFormOpen(false)}
+        addBreak={addBreak}
+      />
+      <EditBreaksForm
+        isOpen={isEditBreaksFormOpen}
+        onClose={() => setEditBreaksFormOpen(false)}
+        breaks={breaks}
+        updateBreak={updateBreak}
+        removeBreak={removeBreak}
+      />
     </div>
   );
 };

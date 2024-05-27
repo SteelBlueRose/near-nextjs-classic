@@ -10,7 +10,8 @@ export const useNear = (accountId, period) => {
   const [chartData, setChartData] = useState({ labels: [], values: [] });
   const [workingHours, setWorkingHours] = useState(null);
   const [shouldShowSettingsForm, setShouldShowSettingsForm] = useState(false);
-  const isDataFetchedRef = useRef(false); // Ref to track if data has been fetched
+  const [breaks, setBreaks] = useState({ regular_breaks: [], one_time_breaks: [] });
+  const isDataFetchedRef = useRef(false);
 
   useEffect(() => {
     if (!wallet || !accountId || isDataFetchedRef.current) return;
@@ -50,13 +51,14 @@ export const useNear = (accountId, period) => {
         }
 
         fetchCompletedTasks(period);
+        fetchBreaks(accountId);
       } catch (error) {
         console.error('Failed to fetch data:', error);
       }
     };
 
     fetchData();
-    isDataFetchedRef.current = true; // Set ref to true after data is fetched
+    isDataFetchedRef.current = true;
   }, [wallet, accountId]);
 
   useEffect(() => {
@@ -95,6 +97,15 @@ export const useNear = (accountId, period) => {
     }
 
     setChartData({ labels, values });
+  };
+
+  const fetchBreaks = async (accountId) => {
+    const breaks = await wallet.viewMethod({
+      contractId: TodoListContract,
+      method: 'get_breaks',
+      args: { account_id: accountId },
+    });
+    setBreaks(breaks);
   };
 
   const addTask = async (taskData) => {
@@ -234,12 +245,46 @@ export const useNear = (accountId, period) => {
     setShouldShowSettingsForm(false);
   };
 
+  const addBreak = async (startTime, endTime, isRegular, date) => {
+    await wallet.callMethod({
+      contractId: TodoListContract,
+      method: 'add_break',
+      args: { start_time: startTime, end_time: endTime, is_regular: isRegular, date },
+      gas: '300000000000000',
+      deposit: '0',
+    });
+    fetchBreaks(accountId);
+  };
+
+  const updateBreak = async (oldStartTime, oldEndTime, newStartTime, newEndTime, isRegular, newDate) => {
+    await wallet.callMethod({
+      contractId: TodoListContract,
+      method: 'update_break',
+      args: { old_start_time: oldStartTime, old_end_time: oldEndTime, new_start_time: newStartTime, new_end_time: newEndTime, is_regular: isRegular, new_date: newDate },
+      gas: '300000000000000',
+      deposit: '0',
+    });
+    fetchBreaks(accountId);
+  };
+
+  const removeBreak = async (startTime, endTime, isRegular, date) => {
+    await wallet.callMethod({
+      contractId: TodoListContract,
+      method: 'remove_break',
+      args: { start_time: startTime, end_time: endTime, is_regular: isRegular, date },
+      gas: '300000000000000',
+      deposit: '0',
+    });
+    fetchBreaks(accountId);
+  };
+
   return {
     tasks,
     rewards,
     rewardPoints,
     chartData,
     workingHours,
+    breaks,
     addTask,
     updateTask,
     removeTask,
@@ -248,7 +293,11 @@ export const useNear = (accountId, period) => {
     removeReward,
     redeemReward,
     fetchCompletedTasks,
+    fetchBreaks,
     saveWorkingHours,
+    addBreak,
+    updateBreak,
+    removeBreak,
     shouldShowSettingsForm,
   };
 };
