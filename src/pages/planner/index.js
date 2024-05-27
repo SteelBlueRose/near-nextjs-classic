@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import styles from '@/styles/Planner.module.css';
+import { NearContext } from '@/context';
+import { useNear } from '@/hooks/useNear';
 
 const Planner = () => {
+  const { signedAccountId } = useContext(NearContext);
+  const { workingHours } = useNear(signedAccountId);
   const [currentWeek, setCurrentWeek] = useState(new Date());
 
   const handlePrevWeek = () => {
@@ -32,6 +36,20 @@ const Planner = () => {
     return weekDays;
   };
 
+  const isWithinWorkingHours = (day, hour) => {
+    if (!workingHours) return false;
+
+    const dayOfWeek = day.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+    const userWorkingHours = workingHours?.[dayOfWeek];
+
+    if (!userWorkingHours) return false;
+
+    const startTime = parseFloat(userWorkingHours.start_time);
+    const endTime = parseFloat(userWorkingHours.end_time);
+
+    return hour >= startTime && hour < endTime;
+  };
+
   const weekDays = getWeekDays(currentWeek);
 
   return (
@@ -58,7 +76,10 @@ const Planner = () => {
               </div>
               <div className={styles.timeSlots}>
                 {Array.from({ length: 24 }).map((_, hour) => (
-                  <div key={hour} className={styles.timeSlot}></div>
+                  <div
+                    key={hour}
+                    className={`${styles.timeSlot} ${isWithinWorkingHours(day, hour) ? styles.highlight : ''}`}
+                  ></div>
                 ))}
               </div>
             </div>
