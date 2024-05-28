@@ -10,8 +10,6 @@ const EditTaskForm = ({ isOpen, onClose, currentTask, saveTask, workingHours }) 
     deadline: '',
     estimated_time: 0,
     reward_points: 0,
-    preferred_start_time: '',
-    preferred_end_time: '',
   });
 
   useEffect(() => {
@@ -19,36 +17,9 @@ const EditTaskForm = ({ isOpen, onClose, currentTask, saveTask, workingHours }) 
       setTaskData({
         ...currentTask,
         deadline: currentTask.deadline ? new Date(currentTask.deadline).toISOString().substring(0, 10) : '',
-        preferred_start_time: currentTask.preferred_start_time ? convertFloatToTime(currentTask.preferred_start_time) : '',
-        preferred_end_time: currentTask.preferred_end_time ? convertFloatToTime(currentTask.preferred_end_time) : '',
       });
     }
   }, [currentTask]);
-
-  const validatePreferredTimes = () => {
-    const startTime = parseFloat(taskData.preferred_start_time.replace(':', '.'));
-    const endTime = parseFloat(taskData.preferred_end_time.replace(':', '.'));
-
-    if (startTime >= endTime) {
-      alert('Preferred start time must be less than the preferred end time.');
-      return false;
-    }
-
-    const dayOfWeek = new Date(taskData.deadline).toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-    const userWorkingHours = workingHours[dayOfWeek];
-
-    if (!userWorkingHours) {
-      alert(`No working hours set for ${dayOfWeek}.`);
-      return false;
-    }
-
-    if (startTime < userWorkingHours.start_time || endTime > userWorkingHours.end_time) {
-      alert('Preferred times must be within the working hours.');
-      return false;
-    }
-
-    return true;
-  };
 
   const handleSave = () => {
     if (!validatePreferredTimes()) return;
@@ -59,19 +30,12 @@ const EditTaskForm = ({ isOpen, onClose, currentTask, saveTask, workingHours }) 
       deadline: taskData.deadline ? new Date(taskData.deadline).getTime() : null,
       estimated_time: taskData.estimated_time ? parseFloat(taskData.estimated_time) : null,
       reward_points: parseInt(taskData.reward_points),
-      preferred_start_time: taskData.preferred_start_time ? parseFloat(taskData.preferred_start_time.replace(':', '.')) : null,
-      preferred_end_time: taskData.preferred_end_time ? parseFloat(taskData.preferred_end_time.replace(':', '.')) : null,
     };
 
     saveTask(formattedTask);
     onClose();
   };
 
-  const convertFloatToTime = (timeFloat) => {
-    const hours = Math.floor(timeFloat);
-    const minutes = Math.round((timeFloat - hours) * 60);
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-  };
 
   return isOpen && (
     <div className={styles.dialogOverlay}>
@@ -129,27 +93,6 @@ const EditTaskForm = ({ isOpen, onClose, currentTask, saveTask, workingHours }) 
           required
         />
         <p className={styles.inputTip}>Reward Points</p>
-        <div className={styles.hoursRow}>
-          <div>
-            <input
-              type="time"
-              value={taskData.preferred_start_time}
-              onChange={(e) => setTaskData({ ...taskData, preferred_start_time: e.target.value })}
-              required
-            />
-            <p className={`${styles.inputTip} ${styles.inputTipNoTopMargin}`}>Preferred start time slot</p>
-          </div>
-          <div>
-            <input
-              type="time"
-              value={taskData.preferred_end_time}
-              onChange={(e) => setTaskData({ ...taskData, preferred_end_time: e.target.value })}
-              required
-            />
-            <p className={`${styles.inputTip} ${styles.inputTipNoTopMargin}`}>Preferred end time slot</p>
-          </div>
-        </div>
-
         <div className={styles.taskButtons}>
           <button className="btn btn-success" onClick={handleSave}>Save</button>
           <button className="btn btn-danger" onClick={onClose}>Cancel</button>

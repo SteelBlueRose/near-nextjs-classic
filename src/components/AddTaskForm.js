@@ -9,8 +9,6 @@ const AddTaskForm = ({ isOpen, onClose, addTask, workingHours }) => {
     deadline: '',
     estimatedTime: 0,
     rewardPoints: 0,
-    preferred_start_time: '',
-    preferred_end_time: '',
   });
 
   const timeStringToFloat = (timeString) => {
@@ -26,35 +24,8 @@ const AddTaskForm = ({ isOpen, onClose, addTask, workingHours }) => {
       deadline: taskData.deadline ? new Date(taskData.deadline).getTime() : null,
       estimated_time: taskData.estimatedTime ? parseFloat(taskData.estimatedTime) : null,
       reward_points: parseInt(taskData.rewardPoints),
-      preferred_start_time: taskData.preferred_start_time ? timeStringToFloat(taskData.preferred_start_time) : null,
-      preferred_end_time: taskData.preferred_end_time ? timeStringToFloat(taskData.preferred_end_time) : null,
     };
-  
-    if (taskData.deadline) {
-      const dayOfWeek = new Date(taskData.deadline).toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-      const userWorkingHours = workingHours?.[dayOfWeek];
-  
-      if (!userWorkingHours) {
-        alert(`No working hours set for ${dayOfWeek}.`);
-        return;
-      }
-  
-      const startTime = timeStringToFloat(taskData.preferred_start_time);
-      const endTime = timeStringToFloat(taskData.preferred_end_time);
-      const workingStartTime = userWorkingHours.start_time;
-      const workingEndTime = userWorkingHours.end_time;
-  
-      if (startTime >= endTime) {
-        alert('Preferred start time must be earlier than preferred end time.');
-        return;
-      }
-  
-      if (startTime < workingStartTime || endTime > workingEndTime) {
-        alert('Preferred time slot must be within working hours.');
-        return;
-      }
-    }
-  
+
     addTask(formattedTask);
     onClose();
   };  
@@ -115,27 +86,6 @@ const AddTaskForm = ({ isOpen, onClose, addTask, workingHours }) => {
           required
         />
         <p className={styles.inputTip}>Reward Points</p>
-        <div className={styles.hoursRow}>
-          <div>
-            <input
-              type="time"
-              value={taskData.preferred_start_time}
-              onChange={(e) => setTaskData({ ...taskData, preferred_start_time: e.target.value })}
-              required
-            />
-            <p className={`${styles.inputTip} ${styles.inputTipNoTopMargin}`}>Preferred start time slot</p>
-          </div>
-          <div>
-            <input
-              type="time"
-              value={taskData.preferred_end_time}
-              onChange={(e) => setTaskData({ ...taskData, preferred_end_time: e.target.value })}
-              required
-            />
-            <p className={`${styles.inputTip} ${styles.inputTipNoTopMargin}`}>Preferred end time slot</p>
-          </div>
-        </div>
-
         <div className={styles.taskButtons}>
           <button className="btn btn-success" onClick={handleSave}>Add</button>
           <button className="btn btn-danger" onClick={onClose}>Cancel</button>
