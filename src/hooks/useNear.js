@@ -1,6 +1,8 @@
+// hooks/useNear.js
 import { useEffect, useState, useContext, useRef } from 'react';
 import { NearContext } from '@/context';
 import { TodoListContract } from '../config';
+import { scheduleTasks, sortTasksByPriority } from '@/utils/greedy_scheduler';
 
 export const useNear = (accountId, period) => {
   const { wallet } = useContext(NearContext);
@@ -108,21 +110,49 @@ export const useNear = (accountId, period) => {
     setBreaks(breaks);
   };
 
-  const addTask = async (taskData) => {
-    await wallet.callMethod({
-      contractId: TodoListContract,
-      method: 'add_task',
-      args: taskData,
-      gas: '300000000000000',
-      deposit: '0',
-    });
-
+  const callScheduler = async () => {
     const tasks = await wallet.viewMethod({
       contractId: TodoListContract,
       method: 'get_tasks',
       args: { account_id: accountId },
     });
-    setTasks(tasks);
+
+    const workingHours = await wallet.viewMethod({
+      contractId: TodoListContract,
+      method: 'get_working_hours',
+      args: { account_id: accountId },
+    });
+
+    const breaks = await wallet.viewMethod({
+      contractId: TodoListContract,
+      method: 'get_breaks',
+      args: { account_id: accountId },
+    });
+
+    const weekDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const workHours = [workingHours.start_time * 60, workingHours.end_time * 60]; // Конвертувати в хвилини
+    const sortedTasks = sortTasksByPriority(tasks);
+    const scheduledTasks = sortedTasks.map(task => {
+      const dayIndex = weekDays.indexOf(task.day.toLowerCase());
+      return { ...task, dayIndex, duration: task.estimated_time * 60 };
+    });
+    const finalSchedule = scheduleTasks(scheduledTasks, workHours, breaks);
+
+    setTasks(finalSchedule);
+
+    await wallet.callMethod({
+      contractId: TodoListContract,
+      method: 'update_time_slots',
+      args: { time_slots: finalSchedule },
+      gas: '300000000000000',
+      deposit: '0',
+    });
+  };
+
+  const addTask = async (taskData) => {
+    const newTask = { ...taskData, id: tasks.length + 1 };
+    setTasks([...tasks, newTask]);
+    await callScheduler();
   };
 
   const updateTask = async (taskData) => {
@@ -133,13 +163,7 @@ export const useNear = (accountId, period) => {
       gas: '300000000000000',
       deposit: '0',
     });
-
-    const tasks = await wallet.viewMethod({
-      contractId: TodoListContract,
-      method: 'get_tasks',
-      args: { account_id: accountId },
-    });
-    setTasks(tasks);
+    await callScheduler();
   };
 
   const removeTask = async (taskId) => {
@@ -150,13 +174,7 @@ export const useNear = (accountId, period) => {
       gas: '300000000000000',
       deposit: '0',
     });
-
-    const tasks = await wallet.viewMethod({
-      contractId: TodoListContract,
-      method: 'get_tasks',
-      args: { account_id: accountId },
-    });
-    setTasks(tasks);
+    await callScheduler();
   };
 
   const markComplete = async (taskId) => {
@@ -167,13 +185,7 @@ export const useNear = (accountId, period) => {
       gas: '300000000000000',
       deposit: '0',
     });
-
-    const tasks = await wallet.viewMethod({
-      contractId: TodoListContract,
-      method: 'get_tasks',
-      args: { account_id: accountId },
-    });
-    setTasks(tasks);
+    await callScheduler();
   };
 
   const addReward = async (rewardData) => {
@@ -243,6 +255,7 @@ export const useNear = (accountId, period) => {
     });
     setWorkingHours(workingHours);
     setShouldShowSettingsForm(false);
+    await callScheduler();
   };
 
   const addBreak = async (startTime, endTime, isRegular, date) => {
@@ -254,6 +267,7 @@ export const useNear = (accountId, period) => {
       deposit: '0',
     });
     fetchBreaks(accountId);
+    await callScheduler();
   };
 
   const updateBreak = async (oldStartTime, oldEndTime, newStartTime, newEndTime, isRegular, newDate) => {
@@ -265,6 +279,7 @@ export const useNear = (accountId, period) => {
       deposit: '0',
     });
     fetchBreaks(accountId);
+    await callScheduler();
   };
 
   const removeBreak = async (startTime, endTime, isRegular, date) => {
@@ -276,6 +291,7 @@ export const useNear = (accountId, period) => {
       deposit: '0',
     });
     fetchBreaks(accountId);
+    await callScheduler();
   };
 
   return {

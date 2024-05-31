@@ -1,0 +1,26 @@
+/* styles/TaskSchedule.module.css */
+.calendar {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .calendar th,
+  .calendar td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .taskCell {
+    background-color: rgba(173, 216, 230, 0.5);
+  }
+  
+  .task {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 14px;
+    border-radius: 4px;
+  }
+  
