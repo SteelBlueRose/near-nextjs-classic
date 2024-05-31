@@ -38,7 +38,7 @@ const Planner = () => {
 
   const getWeekDays = (date) => {
     const startOfWeek = new Date(date);
-    startOfWeek.setDate(date.getDate() - date.getDay() + 1); // Monday as start of the week
+    startOfWeek.setDate(date.getDate() - (date.getDay() === 0 ? 6 : date.getDay() - 1)); // Monday as start of the week
     const weekDays = [];
     for (let i = 0; i < 7; i++) {
       const day = new Date(startOfWeek);
@@ -72,7 +72,14 @@ const Planner = () => {
         </div>
       </div>
       <div className={styles.calendar}>
-        <TaskSchedule tasks={tasks} daysOfWeek={daysOfWeek} hours={hours} workingHours={workingHours} breaks={breaks} />
+        <TaskSchedule
+          tasks={tasks}
+          daysOfWeek={daysOfWeek}
+          hours={hours}
+          workingHours={workingHours}
+          breaks={breaks}
+          weekDays={weekDays}
+        />
       </div>
       <AddBreakForm
         isOpen={isAddBreakFormOpen}

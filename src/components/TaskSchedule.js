@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import styles from '@/styles/TaskSchedule.module.css';
 
-const TaskSchedule = ({ tasks, daysOfWeek, hours, workingHours, breaks }) => {
+const TaskSchedule = ({ tasks, daysOfWeek, hours, workingHours, breaks, weekDays }) => {
     const isWorkingHour = (day, hour) => {
         if (!workingHours || !workingHours[day.toLowerCase()]) return false;
         const { start_time, end_time } = workingHours[day.toLowerCase()];
@@ -67,9 +67,9 @@ const TaskSchedule = ({ tasks, daysOfWeek, hours, workingHours, breaks }) => {
             <td
                 key={`${day}-${hour}`}
                 className={`
-          ${isWorkingHour(day, hour) ? styles.highlight : ''} 
-          ${isBreakHour(day, hour, false) ? styles.breakHighlight : ''}
-        `}
+                    ${isWorkingHour(day, hour) ? styles.highlight : ''} 
+                    ${isBreakHour(day, hour, false) ? styles.breakHighlight : ''}
+                `}
             ></td>
         );
     };
@@ -81,6 +81,12 @@ const TaskSchedule = ({ tasks, daysOfWeek, hours, workingHours, breaks }) => {
                     <th>Time</th>
                     {daysOfWeek.map((day) => (
                         <th key={day}>{day}</th>
+                    ))}
+                </tr>
+                <tr>
+                    <th></th>
+                    {weekDays.map((day) => (
+                        <th key={day}>{day.getDate()}</th>
                     ))}
                 </tr>
             </thead>
