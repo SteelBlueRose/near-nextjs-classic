@@ -1,4 +1,3 @@
-// hooks/useNear.js
 import { useEffect, useState, useContext, useRef } from 'react';
 import { NearContext } from '@/context';
 import { TodoListContract } from '../config';
@@ -150,8 +149,13 @@ export const useNear = (accountId, period) => {
   };
 
   const addTask = async (taskData) => {
-    const newTask = { ...taskData, id: tasks.length + 1 };
-    setTasks([...tasks, newTask]);
+    await wallet.callMethod({
+      contractId: TodoListContract,
+      method: 'add_task',
+      args: taskData,
+      gas: '300000000000000',
+      deposit: '0',
+    });
     await callScheduler();
   };
 
@@ -286,7 +290,7 @@ export const useNear = (accountId, period) => {
     await wallet.callMethod({
       contractId: TodoListContract,
       method: 'remove_break',
-      args: { start_time: startTime, end_time: endTime, is_regular: isRegular, date },
+      args: { start_time: startTime, end_time: EndTime, is_regular: isRegular, date },
       gas: '300000000000000',
       deposit: '0',
     });

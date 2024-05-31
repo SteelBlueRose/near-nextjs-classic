@@ -8,7 +8,8 @@ import styles from '@/styles/Planner.module.css';
 
 const Planner = () => {
   const { signedAccountId } = useContext(NearContext);
-  const { breaks, fetchBreaks, addBreak, updateBreak, removeBreak, workingHours, tasks, addTask } = useNear(signedAccountId, 'week');
+  const { breaks, fetchBreaks, addBreak, updateBreak, removeBreak, workingHours } = useNear(signedAccountId, 'week');
+  const [tasks, setTasks] = useState([]);
   const [currentWeek, setCurrentWeek] = useState(new Date());
   const [isAddBreakFormOpen, setAddBreakFormOpen] = useState(false);
   const [isEditBreaksFormOpen, setEditBreaksFormOpen] = useState(false);
@@ -47,10 +48,12 @@ const Planner = () => {
     return weekDays;
   };
 
-  const addTestTask = () => {
-    const testTask = { name: 'New Test Task', day: 'Wednesday', start: '09:00', end: '12:00' };
-    addTask(testTask);
+  const addTask = () => {
+    setTasks([...tasks, { id: tasks.length + 1, name: 'New Task', day: 'Monday', start: '09:00', end: '12:00' }]);
   };
+
+  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const hours = Array.from({ length: 24 }, (_, i) => i);
 
   const weekDays = getWeekDays(currentWeek);
 
@@ -63,12 +66,14 @@ const Planner = () => {
         </div>
         <button onClick={handleNextWeek}>&rarr;</button>
         <div className={styles.buttonContainer}>
+          <button onClick={addTask}>Add Task</button>
           <button onClick={() => setAddBreakFormOpen(true)}>Add Break</button>
           <button onClick={() => setEditBreaksFormOpen(true)}>Edit Breaks</button>
-          <button onClick={addTestTask}>Add Test Task</button>
         </div>
       </div>
-      <TaskSchedule tasks={tasks} />
+      <div className={styles.calendar}>
+        <TaskSchedule tasks={tasks} daysOfWeek={daysOfWeek} hours={hours} />
+      </div>
       <AddBreakForm
         isOpen={isAddBreakFormOpen}
         onClose={() => setAddBreakFormOpen(false)}

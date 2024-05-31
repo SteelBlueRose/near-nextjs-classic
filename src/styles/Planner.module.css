@@ -1,3 +1,4 @@
+/* styles/Planner.module.css */
 .plannerContainer {
   padding: 20px;
   font-family: Arial, sans-serif;
@@ -17,9 +18,30 @@
 }
 
 .calendar {
-  display: flex;
+  width: 100%;
+  border-collapse: collapse;
   overflow-y: scroll;
   height: calc(100vh - 200px);
+}
+
+.calendar th,
+.calendar td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+.task-cell {
+  background-color: rgba(173, 216, 230, 0.5);
+}
+
+.task {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 14px;
+  border-radius: 4px;
 }
 
 .hoursColumn {

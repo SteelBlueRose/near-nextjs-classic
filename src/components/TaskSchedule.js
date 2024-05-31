@@ -1,11 +1,8 @@
-// components/TaskSchedule.js
 import React from 'react';
 import moment from 'moment';
 import styles from '@/styles/TaskSchedule.module.css';
 
-const TaskSchedule = ({ tasks }) => {
-    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    const hours = Array.from({ length: 24 }, (_, i) => i);
+const TaskSchedule = ({ tasks, daysOfWeek, hours }) => {
 
     const renderTasks = (day, hour) => {
         const taskToRender = tasks.find((task) => {

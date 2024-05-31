@@ -1,7 +1,7 @@
-/* styles/TaskSchedule.module.css */
 .calendar {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
   }
   
   .calendar th,
@@ -9,6 +9,7 @@
     border: 1px solid #ccc;
     padding: 10px;
     text-align: center;
+    vertical-align: top;
   }
   
   .taskCell {
