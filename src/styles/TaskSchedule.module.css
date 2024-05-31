@@ -2,26 +2,33 @@
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
-  }
-  
-  .calendar th,
-  .calendar td {
+}
+
+.calendar th,
+.calendar td {
     border: 1px solid #ccc;
     padding: 10px;
     text-align: center;
     vertical-align: top;
-  }
-  
-  .taskCell {
+}
+
+.taskCell {
     background-color: rgba(173, 216, 230, 0.5);
-  }
-  
-  .task {
+}
+
+.task {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100%;
     font-size: 14px;
     border-radius: 4px;
-  }
-  
+}
+
+.highlight {
+    background-color: rgba(0, 128, 0, 0.2); /* Light green background */
+}
+
+.breakHighlight {
+    background-color: rgba(255, 0, 0, 0.2); /* Light red background for breaks */
+}

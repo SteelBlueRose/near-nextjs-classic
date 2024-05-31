@@ -72,7 +72,7 @@ const Planner = () => {
         </div>
       </div>
       <div className={styles.calendar}>
-        <TaskSchedule tasks={tasks} daysOfWeek={daysOfWeek} hours={hours} />
+        <TaskSchedule tasks={tasks} daysOfWeek={daysOfWeek} hours={hours} workingHours={workingHours} breaks={breaks} />
       </div>
       <AddBreakForm
         isOpen={isAddBreakFormOpen}
